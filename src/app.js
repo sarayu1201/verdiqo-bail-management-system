@@ -1,9 +1,9 @@
-import { VerificationEngine } from './utils/verificationEngine.js?v=3.3';
-import { DashboardStaff } from './components/DashboardStaff.js?v=3.3';
-import { DashboardJudge } from './components/DashboardJudge.js?v=3.3';
-import { DashboardAdmin } from './components/DashboardAdmin.js?v=3.3';
-import { DashboardCitizen } from './components/DashboardCitizen.js?v=3.3';
-import { ReportViewer } from './components/ReportViewer.js?v=3.3';
+import { VerificationEngine } from './utils/verificationEngine.js';
+import { DashboardStaff } from './components/DashboardStaff.js';
+import { DashboardJudge } from './components/DashboardJudge.js';
+import { DashboardAdmin } from './components/DashboardAdmin.js';
+import { DashboardCitizen } from './components/DashboardCitizen.js';
+import { ReportViewer } from './components/ReportViewer.js';
 import {
     db,
     getCaseByNo,
@@ -433,24 +433,24 @@ function updateUI() {
     root.innerHTML = `
         <div class="app-wrapper" style="min-height: 100vh; background: var(--color-bg-dark); display: flex; flex-direction: column;">
             <!-- Top Navbar -->
-            <header class="top-navbar" style="background: var(--color-header-dark); border-bottom: 2px solid var(--color-border); padding: 12px 25px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.15);">
+    <header class="top-navbar" style="background: var(--color-header-dark); border-bottom: 2px solid var(--color-border); padding: 12px 25px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.15);">
                 <div class="brand-section" style="display: flex; align-items: center; gap: 12px;">
-                    <div style="font-size: 24px; color: var(--color-gold);">⚖️</div>
+                    <div style="font-size: 26px; color: var(--color-gold);">⚖️</div>
                     <div>
                         <h1 style="color: #FFFFFF; font-family: var(--font-brand); font-size: 18px; margin: 0; font-weight: 700; letter-spacing: 0.5px;">VERDIQO Bail Management System</h1>
-                        <p style="color: var(--color-text-muted); font-size: 10px; margin: 0; font-family: var(--font-body); letter-spacing: 1.5px; text-transform: uppercase;">Quantex Adjudication Systems Portal</p>
+                        <p style="color: rgba(255,255,255,0.55); font-size: 10px; margin: 2px 0 0 0; font-family: var(--font-body); letter-spacing: 1.5px; text-transform: uppercase;">Quantex Adjudication Systems Portal</p>
                     </div>
                 </div>
 
-                <div class="nav-actions" style="display: flex; align-items: center; gap: 15px;">
+                <div class="nav-actions" style="display: flex; align-items: center; gap: 12px;">
                     <button class="theme-toggle-btn-mock" id="global-theme-toggle-btn" title="Toggle Theme" style="display: flex; align-items: center; justify-content: center; width: 34px; height: 34px; background: #ffffff; border: 1px solid rgba(0,0,0,0.15); border-radius: 6px; cursor: pointer; font-size: 16px;">
                         ${document.body.classList.contains('light-theme') ? '🌙' : '☀️'}
                     </button>
-                    <div style="color: #FFFFFF; font-size: 13px; text-align: right;">
-                        <div style="font-weight: 700;">${AppState.currentUser.name}</div>
-                        <div style="font-size: 11px; color: var(--color-text-muted);">${AppState.currentUser.designation}</div>
+                    <div class="user-info-display" style="text-align: right; line-height: 1.3;">
+                        <div style="color: #FFFFFF; font-size: 13px; font-weight: 700;">${AppState.currentUser.name}</div>
+                        <div style="font-size: 10px; color: rgba(255,255,255,0.55); text-transform: uppercase; letter-spacing: 0.8px;">${AppState.currentUser.designation}</div>
                     </div>
-                    <button class="btn btn-secondary" id="global-logout-btn" style="font-size: 12px; font-weight: 700; border-color: var(--color-border); color: #FFFFFF; background: rgba(255,255,255,0.05); padding: 6px 12px;">Logout</button>
+                    <button class="btn btn-secondary" id="global-logout-btn" style="font-size: 12px; font-weight: 700; border-color: var(--color-border); color: #FFFFFF; background: rgba(255,255,255,0.05); padding: 6px 14px; white-space: nowrap;">Logout</button>
                 </div>
             </header>
 

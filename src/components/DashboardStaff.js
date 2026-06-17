@@ -149,18 +149,18 @@ export const DashboardStaff = {
         mount.innerHTML = `
             <div class="card" style="background: var(--color-card-dark); border: 1px solid var(--color-border); border-radius: 8px; padding: 25px;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--color-border); padding-bottom: 15px;">
-                    <h3 style="color: var(--color-text-main); font-family: var(--font-brand); margin: 0;">New Bail Application Registration</h3>
-                    <button class="btn btn-secondary" id="btn-demo-autofill" style="font-size: 12px; background: rgba(46, 117, 182, 0.2); border: 1px solid var(--color-border); color: #FFFFFF;">
+                    <h3 style="color: var(--color-text-main); font-family: var(--font-brand); margin: 0; font-size: 18px;">New Bail Application Registration</h3>
+                    <button class="btn" id="btn-demo-autofill" style="font-size: 14px; font-weight: 700; background: #e67e22; border: none; color: #FFFFFF; padding: 10px 20px; border-radius: 6px; cursor: pointer;">
                         ⚡ Demo Autofill
                     </button>
                 </div>
-
+                
                 <!-- Tabs for Form Sections -->
                 <div class="form-tabs" style="display: flex; gap: 10px; margin-bottom: 25px; flex-wrap: wrap;">
-                    <button class="btn ${state.formSectionIndex === 1 ? 'btn-primary' : 'btn-secondary'}" id="form-sec-tab-1" style="font-size: 12px;">1. Case Details</button>
-                    <button class="btn ${state.formSectionIndex === 2 ? 'btn-primary' : 'btn-secondary'}" id="form-sec-tab-2" style="font-size: 12px;">2. Accused Details</button>
-                    <button class="btn ${state.formSectionIndex === 3 ? 'btn-primary' : 'btn-secondary'}" id="form-sec-tab-3" style="font-size: 12px;">3. Surety Details</button>
-                    <button class="btn ${state.formSectionIndex === 4 ? 'btn-primary' : 'btn-secondary'}" id="form-sec-tab-4" style="font-size: 12px;">4. Arguments & Court</button>
+                    <button class="btn ${state.formSectionIndex === 1 ? 'btn-primary' : 'btn-secondary'}" id="form-sec-tab-1" style="font-size: 13px; font-weight: 600;">1. Case Details</button>
+                    <button class="btn ${state.formSectionIndex === 2 ? 'btn-primary' : 'btn-secondary'}" id="form-sec-tab-2" style="font-size: 13px; font-weight: 600;">2. Accused Details</button>
+                    <button class="btn ${state.formSectionIndex === 3 ? 'btn-primary' : 'btn-secondary'}" id="form-sec-tab-3" style="font-size: 13px; font-weight: 600;">3. Surety Details</button>
+                    <button class="btn ${state.formSectionIndex === 4 ? 'btn-primary' : 'btn-secondary'}" id="form-sec-tab-4" style="font-size: 13px; font-weight: 600;">4. Arguments &amp; Court</button>
                 </div>
 
                 <!-- Form Panel -->
@@ -198,17 +198,31 @@ export const DashboardStaff = {
                             </div>
                         </div>
 
-                        <div style="margin-bottom: 20px;">
-                            <label style="color: var(--color-text-muted); font-size: 13px; display: block; margin-bottom: 8px;">Supporting Evidence & Documents</label>
-                            <div style="display: flex; flex-direction: column; gap: 8px;">
-                                <label style="color: #FFFFFF; font-size: 13px; display: flex; align-items: center; gap: 8px;">
-                                    <input type="checkbox" id="check-character" checked> Character Certificates
+                        <div style="margin-bottom: 24px; padding: 16px; background: var(--color-navy); border: 1px solid var(--color-border); border-radius: 8px;">
+                            <div style="font-size: 12px; font-weight: 700; color: var(--color-gold); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 14px; display: flex; align-items: center; gap: 6px;">
+                                📎 Supporting Evidence &amp; Documents
+                            </div>
+                            <div style="display: flex; flex-direction: column; gap: 10px;">
+                                <label style="display: flex; align-items: center; gap: 12px; padding: 10px 14px; background: var(--color-card-dark); border: 1px solid var(--color-border); border-radius: 6px; cursor: pointer; transition: border-color 0.2s;">
+                                    <input type="checkbox" id="check-character" checked style="width: 16px; height: 16px; accent-color: var(--color-gold); cursor: pointer; flex-shrink: 0;">
+                                    <div>
+                                        <div style="color: var(--color-text-main); font-size: 13px; font-weight: 600;">Character Certificates</div>
+                                        <div style="color: var(--color-text-muted); font-size: 11px; margin-top: 2px;">Issued by local authority / employer</div>
+                                    </div>
                                 </label>
-                                <label style="color: #FFFFFF; font-size: 13px; display: flex; align-items: center; gap: 8px;">
-                                    <input type="checkbox" id="check-employment" checked> Employment Letters
+                                <label style="display: flex; align-items: center; gap: 12px; padding: 10px 14px; background: var(--color-card-dark); border: 1px solid var(--color-border); border-radius: 6px; cursor: pointer; transition: border-color 0.2s;">
+                                    <input type="checkbox" id="check-employment" checked style="width: 16px; height: 16px; accent-color: var(--color-gold); cursor: pointer; flex-shrink: 0;">
+                                    <div>
+                                        <div style="color: var(--color-text-main); font-size: 13px; font-weight: 600;">Employment Letters</div>
+                                        <div style="color: var(--color-text-muted); font-size: 11px; margin-top: 2px;">Current employment / income proof</div>
+                                    </div>
                                 </label>
-                                <label style="color: #FFFFFF; font-size: 13px; display: flex; align-items: center; gap: 8px;">
-                                    <input type="checkbox" id="check-community" checked> Community Ties Evidence
+                                <label style="display: flex; align-items: center; gap: 12px; padding: 10px 14px; background: var(--color-card-dark); border: 1px solid var(--color-border); border-radius: 6px; cursor: pointer; transition: border-color 0.2s;">
+                                    <input type="checkbox" id="check-community" checked style="width: 16px; height: 16px; accent-color: var(--color-gold); cursor: pointer; flex-shrink: 0;">
+                                    <div>
+                                        <div style="color: var(--color-text-main); font-size: 13px; font-weight: 600;">Community Ties Evidence</div>
+                                        <div style="color: var(--color-text-muted); font-size: 11px; margin-top: 2px;">Property ownership / family residence proof</div>
+                                    </div>
                                 </label>
                             </div>
                         </div>
@@ -328,14 +342,22 @@ export const DashboardStaff = {
                     <!-- SECTION 3 -->
                     <div id="form-section-3-view" style="display: ${state.formSectionIndex === 3 ? 'block' : 'none'};">
                         <!-- Toggle Property vs Individual -->
-                        <div style="margin-bottom: 20px;">
-                            <label style="color: var(--color-text-muted); font-size: 13px; display: block; margin-bottom: 8px;">Surety Backing Type</label>
-                            <div style="display: flex; gap: 15px;">
-                                <label style="color: #FFFFFF; font-size: 13px; display: flex; align-items: center; gap: 8px; cursor: pointer;">
-                                    <input type="radio" name="surety-type" id="surety-type-property" value="Property" checked> Property Backed
+                        <div style="margin-bottom: 24px; padding: 16px; background: var(--color-navy); border: 1px solid var(--color-border); border-radius: 8px;">
+                            <div style="font-size: 12px; font-weight: 700; color: var(--color-gold); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 14px;">🏛️ Surety Backing Type</div>
+                            <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                                <label style="flex: 1; min-width: 180px; display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: var(--color-card-dark); border: 2px solid var(--color-border); border-radius: 8px; cursor: pointer; transition: border-color 0.2s;">
+                                    <input type="radio" name="surety-type" id="surety-type-property" value="Property" checked style="width: 16px; height: 16px; accent-color: var(--color-gold); cursor: pointer; flex-shrink: 0;">
+                                    <div>
+                                        <div style="color: var(--color-text-main); font-size: 13px; font-weight: 700;">🏠 Property Backed</div>
+                                        <div style="color: var(--color-text-muted); font-size: 11px; margin-top: 2px;">Land / immovable asset as collateral</div>
+                                    </div>
                                 </label>
-                                <label style="color: #FFFFFF; font-size: 13px; display: flex; align-items: center; gap: 8px; cursor: pointer;">
-                                    <input type="radio" name="surety-type" id="surety-type-individual" value="Individual"> Individual Solvent Guarantor
+                                <label style="flex: 1; min-width: 180px; display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: var(--color-card-dark); border: 2px solid var(--color-border); border-radius: 8px; cursor: pointer; transition: border-color 0.2s;">
+                                    <input type="radio" name="surety-type" id="surety-type-individual" value="Individual" style="width: 16px; height: 16px; accent-color: var(--color-gold); cursor: pointer; flex-shrink: 0;">
+                                    <div>
+                                        <div style="color: var(--color-text-main); font-size: 13px; font-weight: 700;">👤 Individual Guarantor</div>
+                                        <div style="color: var(--color-text-muted); font-size: 11px; margin-top: 2px;">Solvent person guaranteeing appearance</div>
+                                    </div>
                                 </label>
                             </div>
                         </div>
@@ -475,21 +497,39 @@ export const DashboardStaff = {
                             </div>
                         </div>
 
-                        <!-- Checkboxes for release conditions -->
-                        <div style="margin-bottom: 20px;">
-                            <label style="color: var(--color-text-muted); font-size: 13px; display: block; margin-bottom: 8px;">Release Conditions</label>
-                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 8px;">
-                                <label style="color: #FFFFFF; font-size: 13px; display: flex; align-items: center; gap: 8px;">
-                                    <input type="checkbox" id="cond-weekly" checked> Weekly Reporting to PS
+                        <!-- Release Conditions -->
+                        <div style="margin-bottom: 24px; padding: 16px; background: var(--color-navy); border: 1px solid var(--color-border); border-radius: 8px;">
+                            <div style="font-size: 12px; font-weight: 700; color: var(--color-gold); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 14px; display: flex; align-items: center; gap: 6px;">
+                                ⚖️ Release Conditions
+                            </div>
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px;">
+                                <label style="display: flex; align-items: center; gap: 12px; padding: 10px 14px; background: var(--color-card-dark); border: 1px solid var(--color-border); border-radius: 6px; cursor: pointer;">
+                                    <input type="checkbox" id="cond-weekly" checked style="width: 16px; height: 16px; accent-color: var(--color-gold); cursor: pointer; flex-shrink: 0;">
+                                    <div>
+                                        <div style="color: var(--color-text-main); font-size: 13px; font-weight: 600;">Weekly Reporting to PS</div>
+                                        <div style="color: var(--color-text-muted); font-size: 11px; margin-top: 2px;">Report to local Police Station weekly</div>
+                                    </div>
                                 </label>
-                                <label style="color: #FFFFFF; font-size: 13px; display: flex; align-items: center; gap: 8px;">
-                                    <input type="checkbox" id="cond-passport" checked> Passport Surrender
+                                <label style="display: flex; align-items: center; gap: 12px; padding: 10px 14px; background: var(--color-card-dark); border: 1px solid var(--color-border); border-radius: 6px; cursor: pointer;">
+                                    <input type="checkbox" id="cond-passport" checked style="width: 16px; height: 16px; accent-color: var(--color-gold); cursor: pointer; flex-shrink: 0;">
+                                    <div>
+                                        <div style="color: var(--color-text-main); font-size: 13px; font-weight: 600;">Passport Surrender</div>
+                                        <div style="color: var(--color-text-muted); font-size: 11px; margin-top: 2px;">Surrender to court registry</div>
+                                    </div>
                                 </label>
-                                <label style="color: #FFFFFF; font-size: 13px; display: flex; align-items: center; gap: 8px;">
-                                    <input type="checkbox" id="cond-witness" checked> No Contact with Witnesses
+                                <label style="display: flex; align-items: center; gap: 12px; padding: 10px 14px; background: var(--color-card-dark); border: 1px solid var(--color-border); border-radius: 6px; cursor: pointer;">
+                                    <input type="checkbox" id="cond-witness" checked style="width: 16px; height: 16px; accent-color: var(--color-gold); cursor: pointer; flex-shrink: 0;">
+                                    <div>
+                                        <div style="color: var(--color-text-main); font-size: 13px; font-weight: 600;">No Contact with Witnesses</div>
+                                        <div style="color: var(--color-text-muted); font-size: 11px; margin-top: 2px;">No tampering / communication</div>
+                                    </div>
                                 </label>
-                                <label style="color: #FFFFFF; font-size: 13px; display: flex; align-items: center; gap: 8px;">
-                                    <input type="checkbox" id="cond-geo"> Geofencing Restrictions
+                                <label style="display: flex; align-items: center; gap: 12px; padding: 10px 14px; background: var(--color-card-dark); border: 1px solid var(--color-border); border-radius: 6px; cursor: pointer;">
+                                    <input type="checkbox" id="cond-geo" style="width: 16px; height: 16px; accent-color: var(--color-gold); cursor: pointer; flex-shrink: 0;">
+                                    <div>
+                                        <div style="color: var(--color-text-main); font-size: 13px; font-weight: 600;">Geofencing Restrictions</div>
+                                        <div style="color: var(--color-text-muted); font-size: 11px; margin-top: 2px;">GPS ankle monitor / zone boundary</div>
+                                    </div>
                                 </label>
                             </div>
                         </div>

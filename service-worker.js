@@ -1,4 +1,4 @@
-const CACHE_NAME = 'verdiqo-cache-v1';
+const CACHE_NAME = 'verdiqo-cache-v2';
 const ASSETS = [
   './',
   './index.html',
@@ -45,12 +45,20 @@ self.addEventListener('fetch', event => {
     return event.respondWith(fetch(event.request));
   }
 
+  // Network First strategy: try fetching from network, update cache on success, fallback to cache on error
   event.respondWith(
-    caches.match(event.request).then(cachedResponse => {
-      if (cachedResponse) {
-        return cachedResponse;
-      }
-      return fetch(event.request);
-    })
+    fetch(event.request)
+      .then(response => {
+        if (response && response.status === 200 && event.request.method === 'GET') {
+          const responseToCache = response.clone();
+          caches.open(CACHE_NAME).then(cache => {
+            cache.put(event.request, responseToCache);
+          });
+        }
+        return response;
+      })
+      .catch(() => {
+        return caches.match(event.request);
+      })
   );
 });

@@ -161,6 +161,14 @@ export const DashboardCitizen = {
             state.citizenSearchQuery = mount.querySelector('#citizen-search-input').value.trim();
             onUpdate();
         });
+
+        // Add event listener to the newly rendered download button programmatically
+        const dlBtn = mount.querySelector('#btn-citizen-download');
+        if (dlBtn) {
+            dlBtn.addEventListener('click', () => {
+                alert('Bail Release Certificate PDF generation completed. Encrypted receipt dispatched to jail authorities.');
+            });
+        }
     },
 
     renderTrackerResults(p, state) {
@@ -315,14 +323,6 @@ export const DashboardCitizen = {
                     </div>
                 </div>
             </div>
-        `;
-            
-            <script>
-                // Add event listener to the newly rendered download button
-                document.getElementById('btn-citizen-download')?.addEventListener('click', () => {
-                    alert('Bail Release Certificate PDF generation completed. Encrypted receipt dispatched to jail authorities.');
-                });
-            </script>
         `;
     },
 

@@ -67,18 +67,18 @@ export const DashboardJudge = {
                                 <p style="color: var(--color-text-muted); font-size: 13px; margin: 0;">Cryptographic Dispatch Confirmed</p>
                             </div>
 
-                            <div style="background: var(--color-navy); border: 1px solid var(--color-border); border-radius: 6px; padding: 15px;">
+                            <div style="background: var(--color-table-header); border: 1px solid var(--color-border); border-radius: 6px; padding: 15px;">
                                 <div style="display: grid; grid-template-columns: 100px 1fr; gap: 8px; font-size: 13px; margin-bottom: 6px;">
                                     <span style="color: var(--color-text-muted);">Case No:</span>
-                                    <span style="color: #FFFFFF; font-weight: 600; font-family: var(--font-mono);" id="modal-case-no"></span>
+                                    <span style="color: var(--color-text-main); font-weight: 600; font-family: var(--font-mono);" id="modal-case-no"></span>
                                 </div>
                                 <div style="display: grid; grid-template-columns: 100px 1fr; gap: 8px; font-size: 13px; margin-bottom: 6px;">
                                     <span style="color: var(--color-text-muted);">Accused:</span>
-                                    <span style="color: #FFFFFF; font-weight: 600;" id="modal-accused"></span>
+                                    <span style="color: var(--color-text-main); font-weight: 600;" id="modal-accused"></span>
                                 </div>
                                 <div style="display: grid; grid-template-columns: 100px 1fr; gap: 8px; font-size: 13px; margin-bottom: 6px;">
                                     <span style="color: var(--color-text-muted);">Order Type:</span>
-                                    <span style="color: #FFFFFF; font-weight: 700;" id="modal-verdict"></span>
+                                    <span style="color: var(--color-text-main); font-weight: 700;" id="modal-verdict"></span>
                                 </div>
                                 <div style="display: grid; grid-template-columns: 100px 1fr; gap: 8px; font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
                                     <span style="color: var(--color-text-muted);">Secure Hash:</span>
@@ -317,12 +317,12 @@ export const DashboardJudge = {
                 <!-- Custom Remarks Text Area (Visible when conditions or deny is picked) -->
                 <div id="custom-remarks-container" style="display: ${state.adjudicationDecision === 'CONDITIONAL' || state.adjudicationDecision === 'DENIED' ? 'block' : 'none'};">
                     <label style="color: var(--color-text-muted); font-size: 13px; display: block; margin-bottom: 6px;">Define Adjudication Remarks & Special Release Conditions</label>
-                    <textarea id="adjudication-remarks" style="width: 100%; background: var(--color-navy); border: 1px solid var(--color-border); border-radius: 4px; padding: 10px; color: #FFFFFF; font-family: var(--font-body); font-size: 13px;" rows="3" placeholder="Enter custom terms, geofencing limits, or reasons for denial...">${state.remarks || ''}</textarea>
+                    <textarea id="adjudication-remarks" style="width: 100%; background: var(--color-table-header); border: 1px solid var(--color-border); border-radius: 4px; padding: 10px; color: var(--color-text-main); font-family: var(--font-body); font-size: 13px;" rows="3" placeholder="Enter custom terms, geofencing limits, or reasons for denial...">${state.remarks || ''}</textarea>
                 </div>
 
                 <!-- e-Sign Interaction Box -->
                 <div style="border-top: 1px solid var(--color-border); padding-top: 20px; display: flex; flex-direction: column; gap: 15px; align-items: center;">
-                    <div id="esign-interactive-box" style="width: 100%; max-width: 400px; height: 90px; background: var(--color-navy); border: 2px dashed ${state.eSignAffixed ? 'var(--color-success)' : 'var(--color-border)'}; border-radius: 6px; display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: pointer; transition: all 0.2s; text-align: center; padding: 10px;">
+                    <div id="esign-interactive-box" style="width: 100%; max-width: 400px; height: 90px; background: var(--color-table-header); border: 2px dashed ${state.eSignAffixed ? 'var(--color-success)' : 'var(--color-border)'}; border-radius: 6px; display: flex; flex-direction: column; justify-content: center; align-items: center; cursor: pointer; transition: all 0.2s; text-align: center; padding: 10px;">
                         ${state.eSignAffixed 
                             ? `<span style="color: var(--color-success); font-weight: 700; font-size: 15px; display: flex; align-items: center; gap: 8px;">
                                  ✓ AADHAAR E-SIGN SECURELY AFFIXED

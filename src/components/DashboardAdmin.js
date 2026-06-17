@@ -183,7 +183,7 @@ export const DashboardAdmin = {
                     <h3 style="color: var(--color-text-main); font-family: var(--font-brand); margin: 0 0 15px 0;">HC Compliance Alerts</h3>
                     <div style="display: flex; flex-direction: column; gap: 10px;">
                         ${activeComplianceAlerts.length > 0 ? activeComplianceAlerts.map(alert => `
-                            <div style="border-left: 3px solid var(--color-danger); background: var(--color-navy); border-radius: 4px; padding: 12px;">
+                            <div style="border-left: 3px solid var(--color-danger); background: var(--color-table-header); border-radius: 4px; padding: 12px;">
                                 <div style="display: flex; justify-content: space-between; font-weight: 700; color: var(--color-text-main); font-size: 13px; margin-bottom: 4px;">
                                     <span>${alert.name}</span>
                                     <span style="color: var(--color-danger); font-family: var(--font-mono); font-size: 11px;">${alert.caseNo}</span>

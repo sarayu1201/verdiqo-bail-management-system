@@ -400,10 +400,10 @@ class ApplicationState {
                 <div style="padding: 16px 20px 20px 20px; display: flex; flex-direction: column; gap: 8px;">
                     <p style="color: var(--color-text-muted); font-size: 12px; margin: 0 0 8px 0;">Select a report to generate and preview:</p>
                     ${reports.map((r, i) => `
-                        <button class="btn-select-report" data-id="${r.id}" style="width: 100%; text-align: left; padding: 13px 16px; background: var(--color-navy); border: 1px solid var(--color-border); border-radius: 8px; color: var(--color-text-main); font-weight: 600; font-size: 14px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: border-color 0.2s, background 0.2s; font-family: var(--font-body);">
+                        <button class="btn-select-report" data-id="${r.id}" style="width: 100%; text-align: left; padding: 13px 16px; background: var(--color-navy); border: 1px solid var(--color-border); border-radius: 8px; color: #FFFFFF; font-weight: 600; font-size: 14px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: border-color 0.2s, background 0.2s; font-family: var(--font-body);">
                             <span style="display: flex; align-items: center; gap: 10px;">
                                 <span style="font-size: 18px;">${r.icon}</span>
-                                <span>${i + 1}. ${r.name}</span>
+                                <span style="color: #FFFFFF;">${i + 1}. ${r.name}</span>
                             </span>
                             <span style="color: var(--color-gold); font-size: 16px;">→</span>
                         </button>

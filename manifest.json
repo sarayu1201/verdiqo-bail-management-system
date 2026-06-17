@@ -1,0 +1,18 @@
+{
+  "name": "VERDIQO – e-Court Bail Management System",
+  "short_name": "VERDIQO",
+  "description": "Smart decision support and automated verification platform for bail adjudication in Indian courts. Branded under Quantex Adjudication Systems Portal.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#050c16",
+  "theme_color": "#1B3F6B",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "./src/verdiqo_icon.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    }
+  ]
+}

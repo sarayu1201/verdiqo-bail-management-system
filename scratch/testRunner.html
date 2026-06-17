@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verdiqo Adjudication Engine - Automated Test Runner</title>
+    <style>
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background-color: #f7f3ec;
+            color: #0a1628;
+            margin: 0;
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+        }
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(10, 22, 40, 0.12);
+            border-top: 5px solid #c9a84c;
+            overflow: hidden;
+        }
+        .header {
+            background-color: #0a1628;
+            color: #ffffff;
+            padding: 30px;
+            text-align: center;
+            border-bottom: 2px solid #c9a84c;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+            font-family: 'Playfair Display', serif;
+            color: #f0d080;
+        }
+        .header p {
+            margin: 8px 0 0 0;
+            font-size: 13px;
+            letter-spacing: 1px;
+            font-family: monospace;
+        }
+        .body-content {
+            padding: 30px;
+        }
+        .console-box {
+            background-color: #112244;
+            color: #ffffff;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 13.5px;
+            max-height: 500px;
+            overflow-y: auto;
+            border: 1px solid #c9a84c;
+            line-height: 1.5;
+            white-space: pre-wrap;
+        }
+        .btn-run {
+            background-color: #0a1628;
+            color: #f0d080;
+            border: 2px solid #c9a84c;
+            padding: 12px 24px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            transition: all 0.2s ease;
+            width: 100%;
+        }
+        .btn-run:hover {
+            background-color: #112244;
+            color: #ffffff;
+        }
+        .log-success { color: #2ecc71; font-weight: bold; }
+        .log-danger { color: #e74c3c; font-weight: bold; }
+        .log-info { color: #f1c40f; font-weight: bold; }
+        .log-normal { color: #ffffff; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⚖️ VERDIQO ADJUDICATION SUITE</h1>
+            <p>AUTOMATED DECISION VERIFICATION TEST RUNNER • QUANTEX</p>
+        </div>
+        <div class="body-content">
+            <button class="btn-run" id="btn-trigger-tests">⚡ RUN ADJUDICATION CALCULATIONS TESTS</button>
+            <div class="console-box" id="console-output">Click the button above to execute unit test registries on the Verification Engine module.</div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { runTests } from './testVerification.js';
+
+        const consoleBox = document.getElementById('console-output');
+        const triggerBtn = document.getElementById('btn-trigger-tests');
+
+        function appendLog(message, type) {
+            const span = document.createElement('span');
+            span.className = `log-${type}`;
+            span.innerText = message + '\n';
+            consoleBox.appendChild(span);
+            consoleBox.scrollTop = consoleBox.scrollHeight;
+        }
+
+        triggerBtn.addEventListener('click', () => {
+            consoleBox.innerHTML = '';
+            
+            const results = runTests((msg, type) => {
+                let logType = 'normal';
+                if (type === 'success') logType = 'success';
+                else if (type === 'danger') logType = 'danger';
+                else if (type === 'info') logType = 'info';
+                
+                appendLog(msg, logType);
+            });
+            
+            if (results.failed === 0) {
+                appendLog(`\n🎉 ALL TESTS SUCCESSFULLY CLEARED. MATHEMATICAL & ALGORITHMIC BAIL CALCULATIONS IN INTEGRATED SYSTEMS READY FOR PRODUCTION WORKFLOW.`, 'success');
+            } else {
+                appendLog(`\n⚠️ CRITICAL WARNING: SOME UNIT CALCULATIONS FAILED. AUDIT LAWS IN THE VERIFICATION ENGINE RECORDS.`, 'danger');
+            }
+        });
+    </script>
+</body>
+</html>

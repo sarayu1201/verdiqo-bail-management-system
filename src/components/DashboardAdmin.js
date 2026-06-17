@@ -233,6 +233,9 @@ export const DashboardAdmin = {
                         actionLabel = 'View Obligations';
                     }
 
+                    const isOpen = alert.alertStatus === 'OPEN';
+                    const isResolved = !isOpen;
+
                     return `
                         <div class="card alert-card" data-alertid="${alert.alertId}" style="background: var(--color-card-dark); border: 1px solid var(--color-border); border-radius: 8px; padding: 20px; display: flex; flex-direction: column; gap: 15px; position: relative;">
                             <!-- Alert Header -->
@@ -260,12 +263,15 @@ export const DashboardAdmin = {
 
                             <!-- Alert Footer Actions -->
                             <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--color-border); padding-top: 12px; margin-top: auto;">
-                                <button class="btn btn-primary btn-alert-action" data-alertid="${alert.alertId}" data-action="${actionLabel}" style="font-size: 12px; padding: 6px 12px; background: ${actionLabel === 'Block Surety' ? 'var(--color-danger)' : 'var(--color-navy-sec)'}; border: none;">
+                                <button class="btn btn-primary btn-alert-action" data-alertid="${alert.alertId}" data-action="${actionLabel}" style="font-size: 12px; padding: 6px 12px; background: ${actionLabel === 'Block Surety' ? 'var(--color-danger)' : 'var(--color-navy-sec)'}; border: none; ${isResolved ? 'opacity:0.5;cursor:not-allowed;' : ''}">
                                     ${actionLabel}
                                 </button>
-                                <span class="badge" style="background: ${alert.alertStatus === 'OPEN' ? 'rgba(248, 113, 113, 0.15)' : 'rgba(74, 222, 128, 0.15)'}; color: ${alert.alertStatus === 'OPEN' ? 'var(--color-danger)' : 'var(--color-success)'}; font-size: 11px; font-weight: 700; border: none; padding: 2px 6px; border-radius: 4px;">
-                                    ${alert.alertStatus}
-                                </span>
+                                ${isOpen
+                                    ? `<button class="btn-open-alert" data-alertid="${alert.alertId}" style="background: linear-gradient(135deg, #e67e22, #f39c12); border: none; color: #fff; font-size: 12px; font-weight: 700; padding: 6px 16px; border-radius: 6px; cursor: pointer; letter-spacing: 0.3px;">
+                                        🔍 OPEN
+                                       </button>`
+                                    : `<span style="background: rgba(74,222,128,0.15); color: var(--color-success); font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 4px;">${alert.alertStatus}</span>`
+                                }
                             </div>
                         </div>
                     `;
@@ -273,7 +279,7 @@ export const DashboardAdmin = {
             </div>
         `;
 
-        // Event listeners for action buttons
+        // Event listeners for action (Block/Remand/View) buttons
         mount.querySelectorAll('.btn-alert-action').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 const alertId = e.currentTarget.getAttribute('data-alertid');
@@ -291,7 +297,98 @@ export const DashboardAdmin = {
                 onUpdate();
             });
         });
+
+        // OPEN button → show detail modal
+        mount.querySelectorAll('.btn-open-alert').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const alertId = e.currentTarget.getAttribute('data-alertid');
+                const alertData = db.fraudAlerts.find(a => a.alertId === alertId);
+                if (!alertData) return;
+
+                // Remove any existing modal
+                const existing = document.getElementById('fraud-alert-modal');
+                if (existing) existing.remove();
+
+                const severity = alertData.severity || 'WARNING';
+                let badgeBg = severity === 'CRITICAL' ? 'var(--color-danger)' : severity === 'OVERCOMMIT' ? 'var(--color-warning)' : 'var(--color-blue-num)';
+
+                const overlay = document.createElement('div');
+                overlay.id = 'fraud-alert-modal';
+                overlay.style = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(5,12,22,0.88);display:flex;justify-content:center;align-items:center;z-index:2000;padding:16px;box-sizing:border-box;';
+
+                overlay.innerHTML = `
+                    <div style="background:var(--color-card-dark);border:2px solid var(--color-border);border-radius:12px;width:100%;max-width:600px;overflow:hidden;box-shadow:0 24px 64px rgba(0,0,0,0.7);max-height:90vh;display:flex;flex-direction:column;">
+
+                        <!-- Modal Header -->
+                        <div style="background:var(--color-header-dark);border-bottom:2px solid ${badgeBg};padding:16px 20px;display:flex;align-items:center;gap:12px;flex-shrink:0;">
+                            <button id="fraud-modal-back" style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);color:#fff;font-size:13px;font-weight:700;padding:7px 14px;border-radius:6px;cursor:pointer;white-space:nowrap;">
+                                ← Back
+                            </button>
+                            <div style="flex:1;min-width:0;">
+                                <div style="color:${badgeBg};font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;">Fraud Alert — ${severity}</div>
+                                <div style="color:#fff;font-size:15px;font-weight:700;margin-top:2px;">${alertData.alertType}</div>
+                            </div>
+                            <span style="font-family:var(--font-mono);font-size:12px;color:var(--color-gold);font-weight:700;">${alertData.alertId}</span>
+                        </div>
+
+                        <!-- Modal Body -->
+                        <div style="padding:20px;overflow-y:auto;display:flex;flex-direction:column;gap:16px;">
+
+                            <!-- Case Details -->
+                            <div style="background:var(--color-navy);border:1px solid var(--color-border);border-radius:8px;padding:16px;">
+                                <div style="font-size:11px;font-weight:700;color:var(--color-gold);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;">📁 Case Details</div>
+                                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:13px;">
+                                    <div><span style="color:var(--color-text-muted);">Case No.</span><br><strong style="color:var(--color-text-main);">${alertData.caseNos}</strong></div>
+                                    <div><span style="color:var(--color-text-muted);">Subject</span><br><strong style="color:var(--color-text-main);">${alertData.accusedSurety}</strong></div>
+                                    <div><span style="color:var(--color-text-muted);">Reference</span><br><strong style="color:var(--color-text-main);">${alertData.aadhaarPropertyRef}</strong></div>
+                                    <div><span style="color:var(--color-text-muted);">Alert Status</span><br><strong style="color:var(--color-danger);">${alertData.alertStatus}</strong></div>
+                                </div>
+                            </div>
+
+                            <!-- Alert Description -->
+                            <div style="background:var(--color-navy);border:1px solid var(--color-border);border-radius:8px;padding:16px;">
+                                <div style="font-size:11px;font-weight:700;color:var(--color-gold);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">⚠️ Trigger Description</div>
+                                <p style="color:var(--color-text-muted);font-size:13px;line-height:1.6;margin:0;">${alertData.description}</p>
+                            </div>
+
+                            <!-- Action Taken / Recommended -->
+                            <div style="background:rgba(239,68,68,0.07);border:1px solid rgba(239,68,68,0.3);border-radius:8px;padding:16px;">
+                                <div style="font-size:11px;font-weight:700;color:var(--color-danger);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">🔒 Recommended Action</div>
+                                <p style="color:var(--color-text-main);font-size:13px;margin:0;line-height:1.5;">
+                                    Immediately freeze all surety transactions linked to this alert reference. Cross-verify against UIDAI and Sub-Registrar records before allowing further bail proceedings.
+                                </p>
+                            </div>
+
+                            <!-- Resolve Button -->
+                            <button id="fraud-modal-resolve" data-alertid="${alertData.alertId}" style="width:100%;padding:13px;background:linear-gradient(135deg,var(--color-danger),#b91c1c);border:none;color:#fff;font-size:14px;font-weight:700;border-radius:8px;cursor:pointer;letter-spacing:0.3px;">
+                                ✓ Mark as Resolved &amp; Close Alert
+                            </button>
+                        </div>
+                    </div>
+                `;
+
+                document.body.appendChild(overlay);
+
+                // Back button
+                overlay.querySelector('#fraud-modal-back').addEventListener('click', () => overlay.remove());
+                // Click backdrop
+                overlay.addEventListener('click', (ev) => { if (ev.target === overlay) overlay.remove(); });
+
+                // Resolve button
+                overlay.querySelector('#fraud-modal-resolve').addEventListener('click', () => {
+                    const idx = db.fraudAlerts.findIndex(a => a.alertId === alertId);
+                    if (idx !== -1) {
+                        db.fraudAlerts[idx].alertStatus = 'CLOSED (RESOLVED)';
+                        db.fraudAlerts[idx].actionTaken = 'Manually resolved via OPEN detail view';
+                        state.saveDatabase();
+                    }
+                    overlay.remove();
+                    onUpdate();
+                });
+            });
+        });
     },
+
 
     renderAuditLedger(mount, state, onUpdate) {
         const logs = state.logs || [];

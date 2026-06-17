@@ -13,7 +13,7 @@ export const DashboardJudge = {
             <div class="judge-container" style="display: flex; gap: 20px; flex-wrap: wrap;">
                 <!-- Left Sidebar: Today's Hearing Listings -->
                 <div class="sidebar" style="flex: 1; min-width: 280px; max-width: 350px; background: var(--color-card-dark); border: 1px solid var(--color-border); border-radius: 8px; padding: 15px; display: flex; flex-direction: column; gap: 12px; height: fit-content;">
-                    <h3 style="color: #FFFFFF; font-family: var(--font-brand); border-bottom: 1px solid var(--color-border); padding-bottom: 10px; margin: 0;">Today's Hearings</h3>
+                    <h3 style="color: var(--color-text-main); font-family: var(--font-brand); border-bottom: 1px solid var(--color-border); padding-bottom: 10px; margin: 0;">Today's Hearings</h3>
                     <div class="hearings-list" style="display: flex; flex-direction: column; gap: 10px; max-height: 500px; overflow-y: auto;">
                         ${state.cases.map(c => {
                             const active = c.caseNumber === state.selectedCaseNumber;
@@ -30,7 +30,7 @@ export const DashboardJudge = {
                             return `
                                 <div class="hearing-card" data-caseno="${c.caseNumber}" style="background: ${active ? 'rgba(46, 117, 182, 0.15)' : 'var(--color-navy)'}; border: 1px solid ${active ? 'var(--color-navy-sec)' : 'var(--color-border)'}; border-radius: 6px; padding: 12px; cursor: pointer; transition: all 0.2s;">
                                     <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
-                                        <span style="font-weight: 700; color: #FFFFFF; font-size: 14px;">${c.accused.fullName}</span>
+                                        <span style="font-weight: 700; color: var(--color-text-main); font-size: 14px;">${c.accused.fullName}</span>
                                         <span style="height: 10px; width: 10px; background-color: ${dotColor}; border-radius: 50%; display: inline-block;" title="Status: ${c.applicationStatus}"></span>
                                     </div>
                                     <div style="display: flex; justify-content: space-between; font-size: 11px; color: var(--color-text-muted);">
@@ -165,7 +165,7 @@ export const DashboardJudge = {
             <div class="card" style="background: var(--color-card-dark); border: 1px solid var(--color-border); border-radius: 8px; padding: 20px; display: flex; flex-direction: column; gap: 15px;">
                 <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 10px;">
                     <div>
-                        <h2 style="color: #FFFFFF; font-family: var(--font-brand); margin: 0 0 5px 0; font-size: 24px;">${c.accused.fullName}</h2>
+                        <h2 style="color: var(--color-text-main); font-family: var(--font-brand); margin: 0 0 5px 0; font-size: 24px;">${c.accused.fullName}</h2>
                         <div style="color: var(--color-text-muted); font-size: 13px; font-family: var(--font-mono);">${c.caseNumber} • ${c.firNumber}</div>
                     </div>
                     
@@ -182,19 +182,19 @@ export const DashboardJudge = {
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; font-size: 13px; border-top: 1px solid var(--color-border); border-bottom: 1px solid var(--color-border); padding: 15px 0;">
                     <div>
                         <div style="color: var(--color-text-muted); margin-bottom: 2px;">IPC Sections</div>
-                        <div style="color: #FFFFFF; font-weight: 600;">${c.ipcSections}</div>
+                        <div style="color: var(--color-text-main); font-weight: 600;">${c.ipcSections}</div>
                     </div>
                     <div>
                         <div style="color: var(--color-text-muted); margin-bottom: 2px;">Bail Type</div>
-                        <div style="color: #FFFFFF; font-weight: 600;">${c.bailType}</div>
+                        <div style="color: var(--color-text-main); font-weight: 600;">${c.bailType}</div>
                     </div>
                     <div>
                         <div style="color: var(--color-text-muted); margin-bottom: 2px;">Court / Location</div>
-                        <div style="color: #FFFFFF; font-weight: 600;">${c.courtLocation}</div>
+                        <div style="color: var(--color-text-main); font-weight: 600;">${c.courtLocation}</div>
                     </div>
                     <div>
                         <div style="color: var(--color-text-muted); margin-bottom: 2px;">Hearing Time</div>
-                        <div style="color: #FFFFFF; font-weight: 600; font-family: var(--font-mono);">${c.hearingDate ? c.hearingDate.replace('T', ' ') : 'N/A'}</div>
+                        <div style="color: var(--color-text-main); font-weight: 600; font-family: var(--font-mono);">${c.hearingDate ? c.hearingDate.replace('T', ' ') : 'N/A'}</div>
                     </div>
                 </div>
 
@@ -206,19 +206,19 @@ export const DashboardJudge = {
             <!-- Three Checklist Panels -->
             <div class="checklists-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
                 <div class="card" style="background: var(--color-card-dark); border: 1px solid var(--color-border); border-radius: 8px; padding: 15px;">
-                    <h4 style="color: #FFFFFF; font-size: 14px; margin: 0 0 10px 0; border-bottom: 1px solid var(--color-border); padding-bottom: 5px;">1. Accused Verification</h4>
+                    <h4 style="color: var(--color-text-main); font-size: 14px; margin: 0 0 10px 0; border-bottom: 1px solid var(--color-border); padding-bottom: 5px;">1. Accused Verification</h4>
                     <div style="display: flex; flex-direction: column; gap: 6px; font-size: 12px; color: var(--color-text-muted);">
                         <div>• Biometrics: <span style="color: ${idVerified ? 'var(--color-success)' : 'var(--color-danger)'}; font-weight: 600;">${idVerified ? 'MATCHED' : 'ALERT'}</span></div>
-                        <div>• NCRB Matches: <span style="color: #FFFFFF; font-weight: 600;">${c.accused.criminalHistory}</span></div>
-                        <div>• Flight Risk Status: <span style="color: #FFFFFF; font-weight: 600;">${c.accused.abscondingCount > 0 ? 'HIGH' : 'LOW'}</span></div>
+                        <div>• NCRB Matches: <span style="color: var(--color-text-main); font-weight: 600;">${c.accused.criminalHistory}</span></div>
+                        <div>• Flight Risk Status: <span style="color: var(--color-text-main); font-weight: 600;">${c.accused.abscondingCount > 0 ? 'HIGH' : 'LOW'}</span></div>
                     </div>
                 </div>
                 <div class="card" style="background: var(--color-card-dark); border: 1px solid var(--color-border); border-radius: 8px; padding: 15px;">
-                    <h4 style="color: #FFFFFF; font-size: 14px; margin: 0 0 10px 0; border-bottom: 1px solid var(--color-border); padding-bottom: 5px;">2. Surety & Property</h4>
+                    <h4 style="color: var(--color-text-main); font-size: 14px; margin: 0 0 10px 0; border-bottom: 1px solid var(--color-border); padding-bottom: 5px;">2. Surety & Property</h4>
                     <div style="display: flex; flex-direction: column; gap: 6px; font-size: 12px; color: var(--color-text-muted);">
-                        <div>• Capacity: <span style="color: #FFFFFF; font-weight: 600;">${c.surety?.financialCapacityCheck || 'ADEQUATE'}</span></div>
-                        <div>• Guarantees: <span style="color: #FFFFFF; font-weight: 600;">${c.surety?.activeBailCount || '0'}/${c.surety?.maxAllowed || '2'}</span></div>
-                        <div>• Mutation: <span style="color: #FFFFFF; font-weight: 600;">${c.surety?.mutationStatus || 'PENDING'}</span></div>
+                        <div>• Capacity: <span style="color: var(--color-text-main); font-weight: 600;">${c.surety?.financialCapacityCheck || 'ADEQUATE'}</span></div>
+                        <div>• Guarantees: <span style="color: var(--color-text-main); font-weight: 600;">${c.surety?.activeBailCount || '0'}/${c.surety?.maxAllowed || '2'}</span></div>
+                        <div>• Mutation: <span style="color: var(--color-text-main); font-weight: 600;">${c.surety?.mutationStatus || 'PENDING'}</span></div>
                     </div>
                 </div>
                 <div class="card" style="background: var(--color-card-dark); border: 1px solid var(--color-border); border-radius: 8px; padding: 15px; cursor: pointer;" id="card-trigger-decision-panel">
@@ -232,7 +232,7 @@ export const DashboardJudge = {
             <!-- Quantex Smart Decision Advice Panel -->
             <div class="card" id="decision-advice-panel" style="background: var(--color-card-dark); border: 1px solid var(--color-border); border-radius: 8px; padding: 25px; display: flex; flex-direction: column; gap: 20px;">
                 <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--color-border); padding-bottom: 10px; margin: 0;">
-                    <h3 style="color: #FFFFFF; font-family: var(--font-brand); margin: 0;">Quantex Smart Decision Advice</h3>
+                    <h3 style="color: var(--color-text-main); font-family: var(--font-brand); margin: 0;"</h3>
                     <span style="font-size: 11px; font-family: var(--font-mono); color: var(--color-gold);">QUANTEX INTELLIGENCE ENGINE v4.2</span>
                 </div>
 
@@ -241,7 +241,7 @@ export const DashboardJudge = {
                     <div style="display: flex; flex-direction: column; align-items: center; gap: 10px; flex: 1; min-width: 150px;">
                         <div style="position: relative; width: 120px; height: 120px; border-radius: 50%; background: conic-gradient(${riskColor} ${riskScore}%, var(--color-navy) 0); display: flex; justify-content: center; align-items: center;">
                             <div style="width: 100px; height: 100px; border-radius: 50%; background: var(--color-card-dark); display: flex; flex-direction: column; justify-content: center; align-items: center;">
-                                <span style="font-size: 28px; font-weight: 800; color: #FFFFFF; font-family: var(--font-mono);">${riskScore}</span>
+                                <span style="font-size: 28px; font-weight: 800; color: var(--color-text-main); font-family: var(--font-mono);">${riskScore}</span>
                                 <span style="font-size: 10px; color: var(--color-text-muted);">RISK INDEX</span>
                             </div>
                         </div>
@@ -249,7 +249,7 @@ export const DashboardJudge = {
 
                     <!-- Risk Breakdown Matrix -->
                     <div style="flex: 2; min-width: 250px;">
-                        <h4 style="color: #FFFFFF; font-size: 14px; margin: 0 0 10px 0;">Automated Risk Matrix Points</h4>
+                        <h4 style="color: var(--color-text-main); font-size: 14px; margin: 0 0 10px 0;">Automated Risk Matrix Points</h4>
                         <table style="width: 100%; border-collapse: collapse; font-size: 12px; text-align: left;">
                             <thead>
                                 <tr style="border-bottom: 1px solid var(--color-border); color: var(--color-text-muted);">
@@ -259,22 +259,22 @@ export const DashboardJudge = {
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr style="border-bottom: 1px dotted var(--color-border); color: #FFFFFF;">
+                                <tr style="border-bottom: 1px dotted var(--color-border); color: var(--color-text-main);">
                                     <td style="padding: 6px;">NCRB CCTNS FIR Cases</td>
                                     <td style="padding: 6px; color: var(--color-text-muted);">ncrb.gov.in</td>
                                     <td style="padding: 6px; text-align: right; font-family: var(--font-mono); color: var(--color-danger);">+${c.accused.ncrbCount * 15 || 0}</td>
                                 </tr>
-                                <tr style="border-bottom: 1px dotted var(--color-border); color: #FFFFFF;">
+                                <tr style="border-bottom: 1px dotted var(--color-border); color: var(--color-text-main);">
                                     <td style="padding: 6px;">Absconding / Default Record</td>
                                     <td style="padding: 6px; color: var(--color-text-muted);">Local Adjudication Ledger</td>
                                     <td style="padding: 6px; text-align: right; font-family: var(--font-mono); color: var(--color-danger);">+${c.accused.abscondingCount * 30 || 0}</td>
                                 </tr>
-                                <tr style="border-bottom: 1px dotted var(--color-border); color: #FFFFFF;">
+                                <tr style="border-bottom: 1px dotted var(--color-border); color: var(--color-text-main);">
                                     <td style="padding: 6px;">MEA Lookout Watchlist</td>
                                     <td style="padding: 6px; color: var(--color-text-muted);">passportindia.gov.in</td>
                                     <td style="padding: 6px; text-align: right; font-family: var(--font-mono); color: var(--color-danger);">+${c.accused.travelRestricted ? '50' : '0'}</td>
                                 </tr>
-                                <tr style="border-bottom: 1px dotted var(--color-border); color: #FFFFFF;">
+                                <tr style="border-bottom: 1px dotted var(--color-border); color: var(--color-text-main);">
                                     <td style="padding: 6px;">Surety Guarantee Overcommit</td>
                                     <td style="padding: 6px; color: var(--color-text-muted);">e-Courts Registry</td>
                                     <td style="padding: 6px; text-align: right; font-family: var(--font-mono); color: var(--color-danger);">+${c.surety?.guaranteeOverload === 'YES' ? '40' : '0'}</td>
@@ -287,11 +287,11 @@ export const DashboardJudge = {
                 <div style="font-size: 13px; color: var(--color-text-muted); border-top: 1px solid var(--color-border); padding-top: 15px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
                     <div>
                         <span style="color: var(--color-text-muted);">Crime Severity Class:</span>
-                        <strong style="color: #FFFFFF; margin-left: 5px;">${c.proposedBailAmount >= 100000 ? 'NON-BAILABLE / VIOLENT' : 'BAILABLE / STANDING'}</strong>
+                        <strong style="color: var(--color-text-main); margin-left: 5px;">${c.proposedBailAmount >= 100000 ? 'NON-BAILABLE / VIOLENT' : 'BAILABLE / STANDING'}</strong>
                     </div>
                     <div>
                         <span style="color: var(--color-text-muted);">Prosecution Evidence Strength:</span>
-                        <strong style="color: #FFFFFF; margin-left: 5px;">PRIMA FACIE STRONG</strong>
+                        <strong style="color: var(--color-text-main); margin-left: 5px;">PRIMA FACIE STRONG</strong>
                     </div>
                 </div>
 
@@ -302,7 +302,7 @@ export const DashboardJudge = {
             <!-- Judicial Adjudication Action Bar + e-SIGN -->
             <div class="card" style="background: var(--color-card-dark); border: 1px solid var(--color-border); border-radius: 8px; padding: 25px; display: flex; flex-direction: column; gap: 20px;">
                 <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--color-border); padding-bottom: 10px; margin: 0;">
-                    <h3 style="color: #FFFFFF; font-family: var(--font-brand); margin: 0;">Judicial Adjudication Panel</h3>
+                    <h3 style="color: var(--color-text-main); font-family: var(--font-brand); margin: 0;"</h3>
                     <span style="font-size: 11px; font-family: var(--font-mono); color: var(--color-danger); font-weight: 800;">PRESIDING JUDGE ENCRYPTED AUTHORIZATION</span>
                 </div>
 
@@ -426,7 +426,7 @@ export const DashboardJudge = {
                 modal.innerHTML = `
                     <div style="background: var(--color-card-dark); border: 2px solid var(--color-border); border-radius: 10px; width: 90%; max-width: 420px; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.6); box-sizing: border-box; text-align: center;">
                         <div style="font-size: 36px; color: var(--color-gold); margin-bottom: 10px;">🛡️</div>
-                        <h3 style="color: #FFFFFF; font-family: var(--font-brand); margin: 0 0 5px 0;">UIDAI Aadhaar e-Sign Portal</h3>
+                        <h3 style="color: var(--color-text-main); font-family: var(--font-brand); margin: 0 0 5px 0;">UIDAI Aadhaar e-Sign Portal</h3>
                         <p style="color: var(--color-text-muted); font-size: 12px; margin: 0 0 20px 0;">A secure 6-digit verification code has been sent to the registered mobile number associated with Aadhaar **** **** ${selectedCase.accused.aadhaarNumber ? selectedCase.accused.aadhaarNumber.slice(-4) : '9012'}</p>
                         
                         <div style="display: flex; justify-content: center; gap: 10px; margin-bottom: 25px;" id="otp-input-container">

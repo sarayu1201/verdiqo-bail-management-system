@@ -97,7 +97,7 @@ export const DashboardAdmin = {
             <div class="kpi-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px;">
                 <div class="kpi-card" style="background: var(--color-card-dark); border-top: 4px solid var(--color-navy-sec); padding: 15px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
                     <div style="font-size: 12px; color: var(--color-text-muted); text-transform: uppercase;">Total Applications</div>
-                    <div style="font-size: 28px; font-weight: 800; color: #FFFFFF; font-family: var(--font-mono); margin-top: 5px;">${totalApps}</div>
+                    <div style="font-size: 28px; font-weight: 800; color: var(--color-blue-num); font-family: var(--font-mono); margin-top: 5px;">${totalApps}</div>
                 </div>
                 <div class="kpi-card" style="background: var(--color-card-dark); border-top: 4px solid var(--color-success); padding: 15px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
                     <div style="font-size: 12px; color: var(--color-text-muted); text-transform: uppercase;">Granted Orders</div>
@@ -128,7 +128,7 @@ export const DashboardAdmin = {
             <div style="display: flex; gap: 20px; flex-wrap: wrap; margin-top: 15px;">
                 <!-- SVG Line Chart (Left) -->
                 <div class="card" style="flex: 2; min-width: 380px; background: var(--color-card-dark); border: 1px solid var(--color-border); border-radius: 8px; padding: 20px;">
-                    <h3 style="color: #FFFFFF; font-family: var(--font-brand); margin: 0 0 15px 0;">Bail Verification Time Trends (Dec 2025 – May 2026)</h3>
+                    <h3 style="color: var(--color-text-main); font-family: var(--font-brand); margin: 0 0 15px 0;">Bail Verification Time Trends (Dec 2025 – May 2026)</h3>
                     
                     <div style="width: 100%; height: 250px; position: relative;">
                         <!-- SVG graphic container -->
@@ -180,11 +180,11 @@ export const DashboardAdmin = {
 
                 <!-- Right panel: High Court Compliance Alerts (Right) -->
                 <div class="card" style="flex: 1; min-width: 250px; background: var(--color-card-dark); border: 1px solid var(--color-border); border-radius: 8px; padding: 20px;">
-                    <h3 style="color: #FFFFFF; font-family: var(--font-brand); margin: 0 0 15px 0;">HC Compliance Alerts</h3>
+                    <h3 style="color: var(--color-text-main); font-family: var(--font-brand); margin: 0 0 15px 0;">HC Compliance Alerts</h3>
                     <div style="display: flex; flex-direction: column; gap: 10px;">
                         ${activeComplianceAlerts.length > 0 ? activeComplianceAlerts.map(alert => `
                             <div style="border-left: 3px solid var(--color-danger); background: var(--color-navy); border-radius: 4px; padding: 12px;">
-                                <div style="display: flex; justify-content: space-between; font-weight: 700; color: #FFFFFF; font-size: 13px; margin-bottom: 4px;">
+                                <div style="display: flex; justify-content: space-between; font-weight: 700; color: var(--color-text-main); font-size: 13px; margin-bottom: 4px;">
                                     <span>${alert.name}</span>
                                     <span style="color: var(--color-danger); font-family: var(--font-mono); font-size: 11px;">${alert.caseNo}</span>
                                 </div>
@@ -207,7 +207,7 @@ export const DashboardAdmin = {
 
         mount.innerHTML = `
             <div style="margin-bottom: 15px;">
-                <h3 style="color: #FFFFFF; font-family: var(--font-brand); margin: 0 0 5px 0;">Fraud Sentinel Surveillance Panel</h3>
+                <h3 style="color: var(--color-text-main); font-family: var(--font-brand); margin: 0 0 5px 0;">Fraud Sentinel Surveillance Panel</h3>
                 <p style="color: var(--color-text-muted); font-size: 13px; margin: 0;">Automated triggers checking duplicate asset pledging and identity mismatches</p>
             </div>
 
@@ -241,16 +241,16 @@ export const DashboardAdmin = {
                                     <span class="badge" style="background: ${badgeBg}; color: ${badgeColor}; padding: 3px 6px; border-radius: 4px; font-size: 10px; font-weight: 800; display: inline-block; margin-bottom: 6px;">
                                         ${severity}
                                     </span>
-                                    <h4 style="color: #FFFFFF; font-size: 15px; margin: 0; font-weight: 700;">${alert.alertType}</h4>
+                                    <h4 style="color: var(--color-text-main); font-size: 15px; margin: 0; font-weight: 700;">${alert.alertType}</h4>
                                 </div>
                                 <span style="font-family: var(--font-mono); font-size: 11px; color: var(--color-gold); font-weight: 700;">${alert.alertId}</span>
                             </div>
 
                             <!-- Alert Meta -->
-                            <div style="font-size: 12px; color: var(--color-text-muted); display: flex; flex-direction: column; gap: 4px; background: var(--color-navy); padding: 10px; border-radius: 4px;">
-                                <div><strong style="color: #FFFFFF;">Case No:</strong> ${alert.caseNos}</div>
-                                <div><strong style="color: #FFFFFF;">Subject:</strong> ${alert.accusedSurety}</div>
-                                <div><strong style="color: #FFFFFF;">Ref:</strong> ${alert.aadhaarPropertyRef}</div>
+                            <div style="font-size: 12px; color: var(--color-text-muted); display: flex; flex-direction: column; gap: 4px; background: var(--color-table-header); padding: 10px; border-radius: 4px;">
+                                <div><strong style="color: var(--color-text-main);">Case No:</strong> ${alert.caseNos}</div>
+                                <div><strong style="color: var(--color-text-main);">Subject:</strong> ${alert.accusedSurety}</div>
+                                <div><strong style="color: var(--color-text-main);">Ref:</strong> ${alert.aadhaarPropertyRef}</div>
                             </div>
 
                             <!-- Alert Body -->
@@ -348,7 +348,7 @@ export const DashboardAdmin = {
             <div class="card" style="background: var(--color-card-dark); border: 1px solid var(--color-border); border-radius: 8px; padding: 20px;">
                 <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--color-border); padding-bottom: 12px; margin-bottom: 20px;">
                     <div>
-                        <h3 style="color: #FFFFFF; font-family: var(--font-brand); margin: 0; font-size: 18px;">Quantex Cryptographic Audit Trail</h3>
+                        <h3 style="color: var(--color-text-main); font-family: var(--font-brand); margin: 0; font-size: 18px;">Quantex Cryptographic Audit Trail</h3>
                         <p style="color: var(--color-text-muted); font-size: 12px; margin: 4px 0 0 0;">Immutable surveillance ledger tracking secure system operations and digital signature dispatches</p>
                     </div>
                     

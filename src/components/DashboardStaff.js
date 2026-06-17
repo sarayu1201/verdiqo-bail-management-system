@@ -59,7 +59,7 @@ export const DashboardStaff = {
             <div class="counters-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px;">
                 <div class="counter-card" style="background: var(--color-card-dark); border-left: 5px solid var(--color-navy-sec); padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
                     <div style="font-size: 13px; color: var(--color-text-muted); text-transform: uppercase;">Total Applications Today</div>
-                    <div style="font-size: 32px; font-weight: 800; color: #FFFFFF; font-family: var(--font-mono);">${totalToday}</div>
+                    <div style="font-size: 32px; font-weight: 800; color: var(--color-blue-num); font-family: var(--font-mono);">${totalToday}</div>
                 </div>
                 <div class="counter-card" style="background: var(--color-card-dark); border-left: 5px solid var(--color-success); padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
                     <div style="font-size: 13px; color: var(--color-text-muted); text-transform: uppercase;">Verified & Ready</div>
@@ -77,11 +77,11 @@ export const DashboardStaff = {
 
             <!-- Case List Table -->
             <div class="card" style="background: var(--color-card-dark); border: 1px solid var(--color-border); border-radius: 8px; padding: 20px; margin-top: 15px;">
-                <h3 style="color: #FFFFFF; font-family: var(--font-brand); margin-bottom: 15px;">Applications Ledger</h3>
+                <h3 style="color: var(--color-text-main); font-family: var(--font-brand); margin-bottom: 15px;">Applications Ledger</h3>
                 <div class="table-container" style="overflow-x: auto;">
                     <table class="data-table" style="width: 100%; border-collapse: collapse; text-align: left;">
                         <thead>
-                            <tr style="background: var(--color-table-header); color: #FFFFFF; border-bottom: 2px solid var(--color-border);">
+                            <tr style="background: var(--color-table-header); color: var(--color-text-main); border-bottom: 2px solid var(--color-border);">
                                 <th style="padding: 12px;">Accused Name</th>
                                 <th style="padding: 12px;">Case Number</th>
                                 <th style="padding: 12px;">IPC Sections</th>
@@ -103,7 +103,7 @@ export const DashboardStaff = {
 
                                 return `
                                     <tr class="clickable-row" data-caseno="${c.caseNumber}" style="border-bottom: 1px solid var(--color-border); cursor: pointer; transition: background 0.2s;">
-                                        <td style="padding: 12px; font-weight: 600; color: #FFFFFF;">${c.accused.fullName}</td>
+                                        <td style="padding: 12px; font-weight: 600; color: var(--color-text-main);">${c.accused.fullName}</td>
                                         <td style="padding: 12px; font-family: var(--font-mono); color: var(--color-text-muted);">${c.caseNumber}</td>
                                         <td style="padding: 12px; color: var(--color-text-muted);">${c.ipcSections}</td>
                                         <td style="padding: 12px; color: var(--color-text-muted);">${c.bailType}</td>
@@ -149,7 +149,7 @@ export const DashboardStaff = {
         mount.innerHTML = `
             <div class="card" style="background: var(--color-card-dark); border: 1px solid var(--color-border); border-radius: 8px; padding: 25px;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--color-border); padding-bottom: 15px;">
-                    <h3 style="color: #FFFFFF; font-family: var(--font-brand); margin: 0;">New Bail Application Registration</h3>
+                    <h3 style="color: var(--color-text-main); font-family: var(--font-brand); margin: 0;">New Bail Application Registration</h3>
                     <button class="btn btn-secondary" id="btn-demo-autofill" style="font-size: 12px; background: rgba(46, 117, 182, 0.2); border: 1px solid var(--color-border); color: #FFFFFF;">
                         ⚡ Demo Autofill
                     </button>
@@ -674,7 +674,7 @@ export const DashboardStaff = {
                 <div style="background: var(--color-card-dark); border: 2px solid var(--color-border); border-radius: 8px; width: 90%; max-width: 500px; padding: 30px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); box-sizing: border-box;">
                     <div style="text-align: center; margin-bottom: 20px;">
                         <div class="loader-spinner" style="border: 4px solid rgba(255,255,255,0.1); border-left-color: var(--color-blue-num); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto 10px;"></div>
-                        <h3 style="color: #FFFFFF; font-family: var(--font-brand); margin: 0 0 5px 0;">Quantex Smart Verification Gateway</h3>
+                        <h3 style="color: var(--color-text-main); font-family: var(--font-brand); margin: 0 0 5px 0;">Quantex Smart Verification Gateway</h3>
                         <p style="color: var(--color-text-muted); font-size: 12px; margin: 0;">Querying secure government API tunnels...</p>
                     </div>
 

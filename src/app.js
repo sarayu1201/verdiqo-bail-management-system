@@ -1,9 +1,9 @@
-import { VerificationEngine } from './utils/verificationEngine.js?v=3.2';
-import { DashboardStaff } from './components/DashboardStaff.js?v=3.2';
-import { DashboardJudge } from './components/DashboardJudge.js?v=3.2';
-import { DashboardAdmin } from './components/DashboardAdmin.js?v=3.2';
-import { DashboardCitizen } from './components/DashboardCitizen.js?v=3.2';
-import { ReportViewer } from './components/ReportViewer.js?v=3.2';
+import { VerificationEngine } from './utils/verificationEngine.js?v=3.3';
+import { DashboardStaff } from './components/DashboardStaff.js?v=3.3';
+import { DashboardJudge } from './components/DashboardJudge.js?v=3.3';
+import { DashboardAdmin } from './components/DashboardAdmin.js?v=3.3';
+import { DashboardCitizen } from './components/DashboardCitizen.js?v=3.3';
+import { ReportViewer } from './components/ReportViewer.js?v=3.3';
 import {
     db,
     getCaseByNo,

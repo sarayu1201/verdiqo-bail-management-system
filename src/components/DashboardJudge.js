@@ -147,6 +147,9 @@ export const DashboardJudge = {
                 onUpdate();
             });
         });
+
+        // Attach all right-panel events AFTER full innerHTML is in the DOM
+        this.attachEvents(container, state, onUpdate);
     },
 
     renderCaseDetails(c, state, onUpdate) {
@@ -341,7 +344,6 @@ export const DashboardJudge = {
                 </div>
             </div>
         `;
-        this.attachEvents(container, state, onUpdate);
     },
 
     renderRecommendationBanner(riskScore) {

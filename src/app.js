@@ -357,36 +357,55 @@ class ApplicationState {
         const caseRecord = this.cases.find(c => c.caseNumber === caseNo);
         if (!caseRecord) return;
 
+        // Remove any existing modal
+        const existing = document.getElementById('document-selector-overlay');
+        if (existing) existing.remove();
+
         // Document options selector
         const reports = [
-            { id: 1, name: '1. Bail Eligibility Assessment Report' },
-            { id: 2, name: '2. Surety Verification Report' },
-            { id: 3, name: '3. Property Mutation Order' },
-            { id: 4, name: '4. Order of Bail Adjudication (Draft)' },
-            { id: 5, name: '5. Post-Bail Compliance Tracking Log' },
-            { id: 7, name: '6. Bail Satisfaction & Release Certificate' }
+            { id: 1, name: 'Bail Eligibility Assessment Report', icon: '📋' },
+            { id: 2, name: 'Surety Verification Report', icon: '🔍' },
+            { id: 3, name: 'Property Mutation Order', icon: '🏠' },
+            { id: 4, name: 'Order of Bail Adjudication (Draft)', icon: '⚖️' },
+            { id: 5, name: 'Post-Bail Compliance Tracking Log', icon: '📊' },
+            { id: 7, name: 'Bail Satisfaction & Release Certificate', icon: '✅' }
         ];
 
         const modalOverlay = document.createElement('div');
         modalOverlay.id = 'document-selector-overlay';
         modalOverlay.className = 'modal-overlay';
-        modalOverlay.style = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(5,12,22,0.8); display: flex; justify-content: center; align-items: center; z-index: 1000;';
+        modalOverlay.style = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(5,12,22,0.85); display: flex; justify-content: center; align-items: center; z-index: 1000; padding: 16px; box-sizing: border-box;';
         
         modalOverlay.innerHTML = `
-            <div class="modal-content" style="background: var(--color-card-dark); border: 2px solid var(--color-border); border-radius: 8px; width: 90%; max-width: 500px; padding: 25px;">
-                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--color-border); padding-bottom: 12px; margin-bottom: 20px;">
-                    <div>
-                        <h3 style="color: #FFFFFF; font-family: var(--font-brand); margin: 0; font-size: 18px;">Legal Document Report Selector</h3>
-                        <p style="color: var(--color-text-muted); font-size: 12px; margin: 4px 0 0 0;">Case: ${caseRecord.accused.fullName} (${caseRecord.caseNumber})</p>
+            <div class="modal-content" style="background: var(--color-card-dark); border: 2px solid var(--color-border); border-radius: 12px; width: 100%; max-width: 520px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.6);">
+                
+                <!-- Modal Header -->
+                <div style="background: var(--color-header-dark); border-bottom: 2px solid var(--color-gold); padding: 16px 20px; display: flex; align-items: center; gap: 12px;">
+                    <button id="back-selector-btn" style="display: flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); color: #FFFFFF; font-size: 13px; font-weight: 700; padding: 7px 14px; border-radius: 6px; cursor: pointer; transition: background 0.2s; white-space: nowrap;">
+                        ← Back
+                    </button>
+                    <div style="flex: 1; min-width: 0;">
+                        <div style="color: var(--color-gold); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">Legal Document Selector</div>
+                        <div style="color: #FFFFFF; font-size: 14px; font-weight: 700; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                            ${caseRecord.accused.fullName}
+                            <span style="color: rgba(255,255,255,0.5); font-size: 12px; font-weight: 400; font-family: var(--font-mono); margin-left: 6px;">${caseRecord.caseNumber}</span>
+                        </div>
                     </div>
-                    <button id="close-selector-btn" style="background: none; border: none; color: #FFFFFF; font-size: 24px; cursor: pointer;">&times;</button>
+                    <button id="close-selector-btn" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); color: rgba(255,255,255,0.7); font-size: 20px; line-height: 1; width: 32px; height: 32px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                        ✕
+                    </button>
                 </div>
 
-                <div style="display: flex; flex-direction: column; gap: 10px;">
-                    ${reports.map(r => `
-                        <button class="btn btn-secondary btn-select-report" data-id="${r.id}" style="width: 100%; text-align: left; padding: 12px 15px; background: var(--color-navy); border: 1px solid var(--color-border); color: #FFFFFF; font-weight: 600; display: flex; justify-content: space-between; align-items: center;">
-                            <span>${r.name}</span>
-                            <span>➔</span>
+                <!-- Report List -->
+                <div style="padding: 16px 20px 20px 20px; display: flex; flex-direction: column; gap: 8px;">
+                    <p style="color: var(--color-text-muted); font-size: 12px; margin: 0 0 8px 0;">Select a report to generate and preview:</p>
+                    ${reports.map((r, i) => `
+                        <button class="btn-select-report" data-id="${r.id}" style="width: 100%; text-align: left; padding: 13px 16px; background: var(--color-navy); border: 1px solid var(--color-border); border-radius: 8px; color: var(--color-text-main); font-weight: 600; font-size: 14px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: border-color 0.2s, background 0.2s; font-family: var(--font-body);">
+                            <span style="display: flex; align-items: center; gap: 10px;">
+                                <span style="font-size: 18px;">${r.icon}</span>
+                                <span>${i + 1}. ${r.name}</span>
+                            </span>
+                            <span style="color: var(--color-gold); font-size: 16px;">→</span>
                         </button>
                     `).join('')}
                 </div>
@@ -395,11 +414,26 @@ class ApplicationState {
 
         document.body.appendChild(modalOverlay);
 
-        modalOverlay.querySelector('#close-selector-btn').addEventListener('click', () => {
-            modalOverlay.remove();
+        // Back / Close buttons both dismiss the modal
+        const closeModal = () => modalOverlay.remove();
+        modalOverlay.querySelector('#back-selector-btn').addEventListener('click', closeModal);
+        modalOverlay.querySelector('#close-selector-btn').addEventListener('click', closeModal);
+
+        // Click outside the inner box also closes
+        modalOverlay.addEventListener('click', (e) => {
+            if (e.target === modalOverlay) closeModal();
         });
 
+        // Hover effect on report rows
         modalOverlay.querySelectorAll('.btn-select-report').forEach(btn => {
+            btn.addEventListener('mouseover', () => {
+                btn.style.borderColor = 'var(--color-gold)';
+                btn.style.background = 'rgba(201,168,76,0.08)';
+            });
+            btn.addEventListener('mouseout', () => {
+                btn.style.borderColor = 'var(--color-border)';
+                btn.style.background = 'var(--color-navy)';
+            });
             btn.addEventListener('click', (e) => {
                 const id = parseInt(e.currentTarget.getAttribute('data-id'));
                 modalOverlay.remove();
@@ -415,6 +449,7 @@ class ApplicationState {
             });
         });
     }
+
 }
 
 const AppState = new ApplicationState();

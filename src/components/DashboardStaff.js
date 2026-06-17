@@ -37,47 +37,113 @@ export const DashboardStaff = {
         });
         container.querySelector('#staff-tab-new').addEventListener('click', () => {
             state.staffActiveTab = 'new-form';
-            onUpdate();
         });
     },
-
     renderDashboard(mount, state, onUpdate) {
         // Top counters calculation
         const allCases = state.cases;
         const totalToday = allCases.length;
-        
+
         const verifiedReady = allCases.filter(c => {
             const risk = parseInt(c.checks?.risk?.score || c.aiRiskScore0100 || c.aiRiskScore010 || "0");
             return c.orderStatus === 'GRANTED' || (c.currentStatus === 'Checking' && risk < 40);
         }).length;
-        
+
         const stillChecking = allCases.filter(c => c.currentStatus === 'Checking').length;
         const alertsRaised = allCases.filter(c => c.applicationStatus === 'ALERT' || c.currentStatus === 'Checking' && parseInt(c.aiRiskScore0100 || c.aiRiskScore010 || "0") >= 80).length;
+
+        // Current filter (stored on state so it survives tab switches)
+        if (!state.ledgerFilter) state.ledgerFilter = 'all';
+
+        const filterLabels = {
+            all: 'All Applications',
+            verified: 'Verified & Ready',
+            checking: 'Still Checking',
+            alert: 'Alerts Raised'
+        };
+
+        // Helper: get filtered list
+        const getFiltered = (filter) => {
+            if (filter === 'verified') return allCases.filter(c => {
+                const risk = parseInt(c.checks?.risk?.score || c.aiRiskScore0100 || c.aiRiskScore010 || "0");
+                return c.orderStatus === 'GRANTED' || (c.currentStatus === 'Checking' && risk < 40);
+            });
+            if (filter === 'checking') return allCases.filter(c => c.currentStatus === 'Checking');
+            if (filter === 'alert') return allCases.filter(c => c.applicationStatus === 'ALERT' || (c.currentStatus === 'Checking' && parseInt(c.aiRiskScore0100 || c.aiRiskScore010 || "0") >= 80));
+            return allCases;
+        };
+
+        const buildRows = (cases) => {
+            if (cases.length === 0) return `
+                <tr><td colspan="6" style="padding: 30px; text-align: center; color: var(--color-text-muted); font-size: 14px;">
+                    No cases match this filter.
+                </td></tr>`;
+            return cases.map(c => {
+                let badgeBg = '';
+                let badgeColor = '#FFFFFF';
+                const status = c.applicationStatus || 'CHECKING';
+                if (status === 'GRANTED') { badgeBg = 'var(--color-success)'; }
+                else if (status === 'CHECKING') { badgeBg = 'var(--color-warning)'; }
+                else if (status === 'ALERT') { badgeBg = 'var(--color-danger)'; }
+                else if (status === 'DENIED') { badgeBg = '#7f1d1d'; }
+                else { badgeBg = '#4b5563'; }
+
+                return `
+                    <tr class="clickable-row" data-caseno="${c.caseNumber}" style="border-bottom: 1px solid var(--color-border); cursor: pointer; transition: background 0.2s;">
+                        <td style="padding: 12px; font-weight: 600; color: var(--color-text-main);">${c.accused.fullName}</td>
+                        <td style="padding: 12px; font-family: var(--font-mono); color: var(--color-text-muted);">${c.caseNumber}</td>
+                        <td style="padding: 12px; color: var(--color-text-muted);">${c.ipcSections}</td>
+                        <td style="padding: 12px; color: var(--color-text-muted);">${c.bailType}</td>
+                        <td style="padding: 12px; font-family: var(--font-mono); color: var(--color-text-muted);">${c.hearingDate ? c.hearingDate.split('T')[1] || '10:30' : '10:30'}</td>
+                        <td style="padding: 12px;">
+                            <span class="badge" style="background: ${badgeBg}; color: ${badgeColor}; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 700;">${status}</span>
+                        </td>
+                    </tr>`;
+            }).join('');
+        };
+
+        const cardStyle = (filter, borderColor) => {
+            const isActive = state.ledgerFilter === filter;
+            return `background: var(--color-card-dark); border-left: 5px solid ${borderColor}; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); cursor: pointer; transition: box-shadow 0.2s, transform 0.15s; ${isActive ? 'box-shadow: 0 0 0 3px ' + borderColor + ', 0 4px 12px rgba(0,0,0,0.2); transform: translateY(-2px);' : ''}`;
+        };
 
         mount.innerHTML = `
             <!-- Counters Grid -->
             <div class="counters-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px;">
-                <div class="counter-card" style="background: var(--color-card-dark); border-left: 5px solid var(--color-navy-sec); padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                <div class="kpi-filter-card" data-filter="all" style="${cardStyle('all', 'var(--color-navy-sec)')}">
                     <div style="font-size: 13px; color: var(--color-text-muted); text-transform: uppercase;">Total Applications Today</div>
                     <div style="font-size: 32px; font-weight: 800; color: var(--color-blue-num); font-family: var(--font-mono);">${totalToday}</div>
+                    <div style="font-size: 11px; color: var(--color-text-muted); margin-top: 4px;">Click to show all ↗</div>
                 </div>
-                <div class="counter-card" style="background: var(--color-card-dark); border-left: 5px solid var(--color-success); padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-                    <div style="font-size: 13px; color: var(--color-text-muted); text-transform: uppercase;">Verified & Ready</div>
+                <div class="kpi-filter-card" data-filter="verified" style="${cardStyle('verified', 'var(--color-success)')}">
+                    <div style="font-size: 13px; color: var(--color-text-muted); text-transform: uppercase;">Verified &amp; Ready</div>
                     <div style="font-size: 32px; font-weight: 800; color: var(--color-success); font-family: var(--font-mono);">${verifiedReady}</div>
+                    <div style="font-size: 11px; color: var(--color-text-muted); margin-top: 4px;">Click to filter ↗</div>
                 </div>
-                <div class="counter-card" style="background: var(--color-card-dark); border-left: 5px solid var(--color-warning); padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                <div class="kpi-filter-card" data-filter="checking" style="${cardStyle('checking', 'var(--color-warning)')}">
                     <div style="font-size: 13px; color: var(--color-text-muted); text-transform: uppercase;">Still Checking</div>
                     <div style="font-size: 32px; font-weight: 800; color: var(--color-warning); font-family: var(--font-mono);">${stillChecking}</div>
+                    <div style="font-size: 11px; color: var(--color-text-muted); margin-top: 4px;">Click to filter ↗</div>
                 </div>
-                <div class="counter-card" style="background: var(--color-card-dark); border-left: 5px solid var(--color-danger); padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                <div class="kpi-filter-card" data-filter="alert" style="${cardStyle('alert', 'var(--color-danger)')}">
                     <div style="font-size: 13px; color: var(--color-text-muted); text-transform: uppercase;">Alerts Raised</div>
                     <div style="font-size: 32px; font-weight: 800; color: var(--color-danger); font-family: var(--font-mono);">${alertsRaised}</div>
+                    <div style="font-size: 11px; color: var(--color-text-muted); margin-top: 4px;">Click to filter ↗</div>
                 </div>
             </div>
 
             <!-- Case List Table -->
             <div class="card" style="background: var(--color-card-dark); border: 1px solid var(--color-border); border-radius: 8px; padding: 20px; margin-top: 15px;">
-                <h3 style="color: var(--color-text-main); font-family: var(--font-brand); margin-bottom: 15px;">Applications Ledger</h3>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <div>
+                        <h3 style="color: var(--color-text-main); font-family: var(--font-brand); margin: 0 0 4px 0;">Applications Ledger</h3>
+                        <div id="ledger-filter-label" style="font-size: 12px; color: var(--color-gold); font-weight: 600;">
+                            Showing: ${filterLabels[state.ledgerFilter]}
+                            ${state.ledgerFilter !== 'all' ? `<span id="clear-filter-btn" style="margin-left: 10px; color: var(--color-text-muted); cursor: pointer; text-decoration: underline; font-weight: 400;">✕ Clear filter</span>` : ''}
+                        </div>
+                    </div>
+                    <span style="font-size: 13px; color: var(--color-text-muted);">${getFiltered(state.ledgerFilter).length} record(s)</span>
+                </div>
                 <div class="table-container" style="overflow-x: auto;">
                     <table class="data-table" style="width: 100%; border-collapse: collapse; text-align: left;">
                         <thead>
@@ -91,50 +157,70 @@ export const DashboardStaff = {
                             </tr>
                         </thead>
                         <tbody id="case-table-body">
-                            ${allCases.map(c => {
-                                let badgeBg = '';
-                                let badgeColor = '#FFFFFF';
-                                const status = c.applicationStatus || 'CHECKING';
-                                if (status === 'GRANTED') { badgeBg = 'var(--color-success)'; }
-                                else if (status === 'CHECKING') { badgeBg = 'var(--color-warning)'; }
-                                else if (status === 'ALERT') { badgeBg = 'var(--color-danger)'; }
-                                else if (status === 'DENIED') { badgeBg = '#7f1d1d'; } // Dark Red
-                                else { badgeBg = '#4b5563'; } // Grey
-
-                                return `
-                                    <tr class="clickable-row" data-caseno="${c.caseNumber}" style="border-bottom: 1px solid var(--color-border); cursor: pointer; transition: background 0.2s;">
-                                        <td style="padding: 12px; font-weight: 600; color: var(--color-text-main);">${c.accused.fullName}</td>
-                                        <td style="padding: 12px; font-family: var(--font-mono); color: var(--color-text-muted);">${c.caseNumber}</td>
-                                        <td style="padding: 12px; color: var(--color-text-muted);">${c.ipcSections}</td>
-                                        <td style="padding: 12px; color: var(--color-text-muted);">${c.bailType}</td>
-                                        <td style="padding: 12px; font-family: var(--font-mono); color: var(--color-text-muted);">${c.hearingDate ? c.hearingDate.split('T')[1] || '10:30' : '10:30'}</td>
-                                        <td style="padding: 12px;">
-                                            <span class="badge" style="background: ${badgeBg}; color: ${badgeColor}; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 700;">${status}</span>
-                                        </td>
-                                    </tr>
-                                `;
-                            }).join('')}
+                            ${buildRows(getFiltered(state.ledgerFilter))}
                         </tbody>
                     </table>
                 </div>
             </div>
         `;
 
-        // Add hover effects and click listeners
-        const rows = mount.querySelectorAll('.clickable-row');
-        rows.forEach(row => {
-            row.addEventListener('mouseover', () => {
-                row.style.background = 'rgba(46, 117, 182, 0.15)';
-            });
-            row.addEventListener('mouseout', () => {
-                row.style.background = 'transparent';
-            });
-            row.addEventListener('click', (e) => {
-                const caseNo = e.currentTarget.getAttribute('data-caseno');
-                state.openDocumentSelector(caseNo);
+        // KPI card click → filter table live (no full re-render)
+        mount.querySelectorAll('.kpi-filter-card').forEach(card => {
+            card.addEventListener('click', () => {
+                const filter = card.getAttribute('data-filter');
+                state.ledgerFilter = filter;
+
+                // Update card highlight
+                mount.querySelectorAll('.kpi-filter-card').forEach(c => {
+                    c.style.transform = '';
+                    c.style.boxShadow = '0 4px 6px rgba(0,0,0,0.1)';
+                });
+                const borderColors = { all: 'var(--color-navy-sec)', verified: 'var(--color-success)', checking: 'var(--color-warning)', alert: 'var(--color-danger)' };
+                card.style.boxShadow = `0 0 0 3px ${borderColors[filter]}, 0 4px 12px rgba(0,0,0,0.2)`;
+                card.style.transform = 'translateY(-2px)';
+
+                // Update table rows live
+                const tbody = mount.querySelector('#case-table-body');
+                tbody.innerHTML = buildRows(getFiltered(filter));
+
+                // Update label
+                const label = mount.querySelector('#ledger-filter-label');
+                label.innerHTML = `Showing: ${filterLabels[filter]} ${filter !== 'all' ? `<span id="clear-filter-btn" style="margin-left:10px;color:var(--color-text-muted);cursor:pointer;text-decoration:underline;font-weight:400;">✕ Clear filter</span>` : ''}`;
+                mount.querySelector('span[style*="record"]').textContent = getFiltered(filter).length + ' record(s)';
+
+                // Clear filter click (re-bind since inner HTML replaced)
+                const clearBtn = mount.querySelector('#clear-filter-btn');
+                if (clearBtn) clearBtn.addEventListener('click', (e) => { e.stopPropagation(); mount.querySelector('[data-filter="all"]').click(); });
+
+                // Reattach row events
+                attachRowEvents();
             });
         });
+
+        // Clear filter button (initial render)
+        const clearBtn = mount.querySelector('#clear-filter-btn');
+        if (clearBtn) {
+            clearBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                mount.querySelector('[data-filter="all"]').click();
+            });
+        }
+
+        // Row hover + click
+        const attachRowEvents = () => {
+            mount.querySelectorAll('.clickable-row').forEach(row => {
+                row.addEventListener('mouseover', () => { row.style.background = 'rgba(46, 117, 182, 0.15)'; });
+                row.addEventListener('mouseout', () => { row.style.background = 'transparent'; });
+                row.addEventListener('click', (e) => {
+                    const caseNo = e.currentTarget.getAttribute('data-caseno');
+                    state.openDocumentSelector(caseNo);
+                });
+            });
+        };
+        attachRowEvents();
     },
+
+
 
     renderNewForm(mount, state, onUpdate) {
         if (!state.formSectionIndex) {

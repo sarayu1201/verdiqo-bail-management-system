@@ -189,10 +189,19 @@ class ApplicationState {
             console.warn("Failed to load logs from server:", e);
         }
 
-        const cached = localStorage.getItem('verdiqo_db_pwa');
+        let cached = localStorage.getItem('verdiqo_db_pwa');
+        let parsedSuccessfully = false;
         if (cached) {
-            this.cases = JSON.parse(cached);
-        } else {
+            try {
+                this.cases = JSON.parse(cached);
+                parsedSuccessfully = true;
+            } catch (err) {
+                console.error("Failed to parse cached database. Clearing local cache.", err);
+                localStorage.removeItem('verdiqo_db_pwa');
+            }
+        }
+        
+        if (!parsedSuccessfully) {
             // Pre-compile verification metrics using engine
             this.cases = INITIAL_DATABASE.map(c => {
                 const fingerprintMatched = c.accused.aadhaarNumber !== '';
@@ -246,6 +255,64 @@ class ApplicationState {
             console.error("Failed to sync database to server:", e);
             this.showToast('Offline Mode: Changes saved to local browser cache.', 'info');
         }
+    }
+
+    startAutoSync() {
+        setInterval(async () => {
+            // Only sync if logged in
+            if (!this.currentUser) return;
+            
+            try {
+                // Fetch cases
+                const res = await fetch('/api/cases');
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data && data.length > 0) {
+                        const dataStr = JSON.stringify(data);
+                        const currentStr = JSON.stringify(this.cases);
+                        if (dataStr !== currentStr) {
+                            this.cases = data;
+                            localStorage.setItem('verdiqo_db_pwa', JSON.stringify(this.cases));
+                            
+                            // Check if user is typing
+                            const activeEl = document.activeElement;
+                            const isTyping = activeEl && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA' || activeEl.tagName === 'SELECT');
+                            // Also check if any scan is active
+                            const isScanning = this.accusedFingerScanning || this.accusedIrisScanning || this.suretyFingerScanning;
+                            // Check if report/otp modal is open
+                            const isModalOpen = document.getElementById('aadhaar-otp-modal') || document.getElementById('document-selector-overlay');
+                            
+                            if (!isTyping && !isScanning && !isModalOpen) {
+                                updateUI();
+                            }
+                        }
+                    }
+                }
+                
+                // Fetch logs
+                const logRes = await fetch('/api/logs');
+                if (logRes.ok) {
+                    const logData = await logRes.json();
+                    if (logData && logData.length > 0) {
+                        const logStr = JSON.stringify(logData);
+                        const currentLogStr = JSON.stringify(this.logs);
+                        if (logStr !== currentLogStr) {
+                            this.logs = logData;
+                            // Only update UI if we are in admin active tab that shows logs
+                            if (this.currentUser.role === 'ADMIN' && this.adminActiveTab === 'admin-logs') {
+                                const activeEl = document.activeElement;
+                                const isTyping = activeEl && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA');
+                                if (!isTyping) {
+                                    updateUI();
+                                }
+                            }
+                        }
+                    }
+                }
+            } catch (e) {
+                console.warn("Background auto-sync failed:", e);
+            }
+        }, 5000);
     }
 
     showToast(message, type = 'success') {
@@ -400,12 +467,12 @@ class ApplicationState {
                 <div style="padding: 16px 20px 20px 20px; display: flex; flex-direction: column; gap: 8px;">
                     <p style="color: var(--color-text-muted); font-size: 12px; margin: 0 0 8px 0;">Select a report to generate and preview:</p>
                     ${reports.map((r, i) => `
-                        <button class="btn-select-report" data-id="${r.id}" style="width: 100%; text-align: left; padding: 13px 16px; background: var(--color-navy); border: 1px solid var(--color-border); border-radius: 8px; color: #FFFFFF; font-weight: 600; font-size: 14px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: border-color 0.2s, background 0.2s; font-family: var(--font-body);">
+                        <button class="btn-select-report" data-id="${r.id}">
                             <span style="display: flex; align-items: center; gap: 10px;">
                                 <span style="font-size: 18px;">${r.icon}</span>
-                                <span style="color: #FFFFFF;">${i + 1}. ${r.name}</span>
+                                <span class="report-name-text">${i + 1}. ${r.name}</span>
                             </span>
-                            <span style="color: var(--color-gold); font-size: 16px;">→</span>
+                            <span class="report-arrow">→</span>
                         </button>
                     `).join('')}
                 </div>
@@ -424,16 +491,8 @@ class ApplicationState {
             if (e.target === modalOverlay) closeModal();
         });
 
-        // Hover effect on report rows
+        // Setup report row click handler
         modalOverlay.querySelectorAll('.btn-select-report').forEach(btn => {
-            btn.addEventListener('mouseover', () => {
-                btn.style.borderColor = 'var(--color-gold)';
-                btn.style.background = 'rgba(201,168,76,0.08)';
-            });
-            btn.addEventListener('mouseout', () => {
-                btn.style.borderColor = 'var(--color-border)';
-                btn.style.background = 'var(--color-navy)';
-            });
             btn.addEventListener('click', (e) => {
                 const id = parseInt(e.currentTarget.getAttribute('data-id'));
                 modalOverlay.remove();
@@ -499,6 +558,22 @@ function updateUI() {
         document.body.classList.toggle('light-theme');
         const isLight = document.body.classList.contains('light-theme');
         localStorage.setItem('verdiqo_theme', isLight ? 'light' : 'dark');
+        
+        // Update open docket if any
+        const docketOverlay = document.getElementById('report-modal-overlay');
+        if (docketOverlay) {
+            const themeSelect = docketOverlay.querySelector('#docket-theme-select');
+            const sheet = docketOverlay.querySelector('.legal-page-sheet');
+            if (themeSelect && sheet && themeSelect.value === 'system') {
+                sheet.classList.remove('theme-cream', 'theme-black');
+                if (isLight) {
+                    sheet.classList.add('theme-cream');
+                } else {
+                    sheet.classList.add('theme-black');
+                }
+            }
+        }
+
         updateUI();
     });
 
@@ -622,7 +697,7 @@ function renderLogin(root) {
     renderLoginForm();
 }
 
-window.addEventListener('DOMContentLoaded', async () => {
+async function initApp() {
     // Read and apply saved theme preference, defaulting to light/beige
     const savedTheme = localStorage.getItem('verdiqo_theme');
     if (savedTheme === 'dark') {
@@ -633,8 +708,15 @@ window.addEventListener('DOMContentLoaded', async () => {
 
     try {
         await AppState.initDatabase();
+        AppState.startAutoSync();
     } catch (e) {
         console.error("Failed initialization:", e);
     }
     updateUI();
-});
+}
+
+if (document.readyState === 'loading') {
+    window.addEventListener('DOMContentLoaded', initApp);
+} else {
+    initApp();
+}

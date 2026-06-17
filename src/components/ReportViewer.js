@@ -39,6 +39,14 @@ export const ReportViewer = {
                 <div class="modal-top-actions">
                     <h3>${reportTitle}</h3>
                     <div style="display: flex; gap: 12px; align-items: center;">
+                        <div style="display: flex; gap: 6px; align-items: center; margin-right: 8px;">
+                            <label style="color: var(--color-text-muted); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; white-space: nowrap;">Docket Style:</label>
+                            <select id="docket-theme-select" style="background: var(--color-navy); border: 1px solid var(--color-border); color: #FFFFFF; font-weight: 700; font-size: 12px; padding: 4px 8px; border-radius: 4px; cursor: pointer; outline: none;">
+                                <option value="system">Auto (Theme Sync)</option>
+                                <option value="cream">Cream Sheet</option>
+                                <option value="black">Black Sheet</option>
+                            </select>
+                        </div>
                         ${backButtonHtml}
                         <button id="print-report-btn" class="btn btn-primary" style="padding: 6px 12px; font-size: 13px; display:inline-flex; align-items:center; justify-content:center; gap:6px;">
                             <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
@@ -90,6 +98,36 @@ export const ReportViewer = {
         // Render specific report template
         const contentDiv = overlay.querySelector('#legal-sheet-content');
         contentDiv.innerHTML = this.getTemplate(reportId, caseData);
+
+        // Apply docket sheet theme selection dynamically
+        const themeSelect = overlay.querySelector('#docket-theme-select');
+        const sheet = overlay.querySelector('.legal-page-sheet');
+
+        const applyDocketTheme = (themeValue) => {
+            sheet.classList.remove('theme-cream', 'theme-black');
+            if (themeValue === 'cream') {
+                sheet.classList.add('theme-cream');
+            } else if (themeValue === 'black') {
+                sheet.classList.add('theme-black');
+            } else {
+                // system auto-sync with global body class
+                if (document.body.classList.contains('light-theme')) {
+                    sheet.classList.add('theme-cream');
+                } else {
+                    sheet.classList.add('theme-black');
+                }
+            }
+        };
+
+        const currentThemeChoice = localStorage.getItem('verdiqo_docket_theme') || 'system';
+        themeSelect.value = currentThemeChoice;
+        applyDocketTheme(currentThemeChoice);
+
+        themeSelect.addEventListener('change', (e) => {
+            const val = e.target.value;
+            localStorage.setItem('verdiqo_docket_theme', val);
+            applyDocketTheme(val);
+        });
 
         // Bind events
         overlay.querySelector('#close-report-btn').addEventListener('click', () => {

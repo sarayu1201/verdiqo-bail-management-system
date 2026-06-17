@@ -13,7 +13,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,600&display=swap" rel="stylesheet">
     
     <!-- Link to our design system stylesheet -->
-    <link rel="stylesheet" href="./src/index.css?v=2.0">
+    <link rel="stylesheet" href="./src/index.css?v=2.1">
     
     <!-- SEO and Institutional Authority tags -->
     <meta property="og:title" content="Verdiqo - Legal Bail Decision Engine">
@@ -30,6 +30,51 @@
                     .catch(err => console.error('Service Worker registration failed', err));
             });
         }
+
+        // Self-healing mechanism: if the loading screen is still visible after 3 seconds,
+        // it means the main application script failed to initialize (likely due to cached/corrupted assets).
+        setTimeout(async () => {
+            const appRoot = document.getElementById('app-root');
+            if (appRoot && appRoot.innerHTML.includes('LOADING VERDIQO ADJUDICATION SECURITY SUITE')) {
+                console.warn("App failed to initialize in 3 seconds. Triggering self-healing recovery...");
+                
+                // Only try to self-heal once per page session to prevent infinite reload loop
+                if (!sessionStorage.getItem('verdiqo_recovered')) {
+                    sessionStorage.setItem('verdiqo_recovered', 'true');
+                    
+                    // Unregister all service workers
+                    if ('serviceWorker' in navigator) {
+                        try {
+                            const registrations = await navigator.serviceWorker.getRegistrations();
+                            for (const registration of registrations) {
+                                await registration.unregister();
+                                console.log('Service Worker unregistered successfully');
+                            }
+                        } catch (err) {
+                            console.error('Failed to unregister service worker:', err);
+                        }
+                    }
+                    
+                    // Clear cache storage
+                    if ('caches' in window) {
+                        try {
+                            const keys = await caches.keys();
+                            for (const key of keys) {
+                                await caches.delete(key);
+                                console.log('Cache cleared:', key);
+                            }
+                        } catch (err) {
+                            console.error('Failed to clear cache:', err);
+                        }
+                    }
+                    
+                    console.log("Reloading page to fetch fresh assets...");
+                    window.location.reload(true);
+                } else {
+                    console.error("Self-healing already attempted. Please check console for errors.");
+                }
+            }
+        }, 3000);
     </script>
 </head>
 <body class="light-theme">
@@ -46,7 +91,7 @@
     </div>
 
     <!-- Script Orchestration - Loaded as an ES6 Module for zero-compilation immediate runnability -->
-    <script type="module" src="./src/app.js?v=3.2"></script>
+    <script type="module" src="./src/app.js?v=3.3"></script>
     
     <style>
         @keyframes pulse {

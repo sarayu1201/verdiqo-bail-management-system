@@ -1,4 +1,4 @@
-const CACHE_NAME = 'verdiqo-cache-v4';
+const CACHE_NAME = 'verdiqo-cache-v7';
 const ASSETS = [
   './',
   './index.html',
@@ -7,12 +7,12 @@ const ASSETS = [
   './src/app.js',
   './src/verdiqo_db.js',
   './src/verdiqo_icon.png',
-  './src/utils/verificationEngine.js?v=3.3',
-  './src/components/DashboardAdmin.js?v=3.3',
-  './src/components/DashboardCitizen.js?v=3.3',
-  './src/components/DashboardJudge.js?v=3.3',
-  './src/components/DashboardStaff.js?v=3.3',
-  './src/components/ReportViewer.js?v=3.3'
+  './src/utils/verificationEngine.js',
+  './src/components/DashboardAdmin.js',
+  './src/components/DashboardCitizen.js',
+  './src/components/DashboardJudge.js',
+  './src/components/DashboardStaff.js',
+  './src/components/ReportViewer.js'
 ];
 
 self.addEventListener('install', event => {
@@ -49,7 +49,7 @@ self.addEventListener('fetch', event => {
   event.respondWith(
     fetch(event.request)
       .then(response => {
-        if (response && response.status === 200 && event.request.method === 'GET') {
+        if (response && response.status === 200 && event.request.method === 'GET' && event.request.url.startsWith('http')) {
           const responseToCache = response.clone();
           caches.open(CACHE_NAME).then(cache => {
             cache.put(event.request, responseToCache);
@@ -58,7 +58,7 @@ self.addEventListener('fetch', event => {
         return response;
       })
       .catch(() => {
-        return caches.match(event.request);
+        return caches.match(event.request, { ignoreSearch: true });
       })
   );
 });

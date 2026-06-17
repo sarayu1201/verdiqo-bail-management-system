@@ -2591,3 +2591,206 @@ body.light-theme .stat-icon.gold::before { border-color: rgba(133, 77, 14, 0.2) 
   border-bottom: 1px solid rgba(255,255,255,0.05);
 }
 
+/* ==========================================================================
+   DYNAMIC OPEN DOCKET SHEET THEMES (CREAM & BLACK OVERRIDES)
+   ========================================================================== */
+
+/* 1. CREAM THEME OVERRIDES (when it's cream, text color is black) */
+.legal-page-sheet.theme-cream {
+  background-color: #f7f3ec !important;
+  color: #000000 !important;
+  border-color: rgba(0, 0, 0, 0.25) !important;
+}
+
+.legal-page-sheet.theme-cream::before,
+.legal-page-sheet.theme-cream::after {
+  background-color: #e8e2d5 !important;
+  border-color: rgba(0, 0, 0, 0.25) !important;
+}
+
+/* Apply black text color to all text elements in the cream docket sheet, excluding watermarks */
+.legal-page-sheet.theme-cream :not(.legal-watermark) {
+  color: #000000 !important;
+}
+
+.legal-page-sheet.theme-cream .legal-watermark {
+  color: rgba(0, 0, 0, 0.03) !important;
+}
+
+.legal-page-sheet.theme-cream svg {
+  stroke: #000000 !important;
+}
+
+.legal-page-sheet.theme-cream .legal-metadata-grid,
+.legal-page-sheet.theme-cream table,
+.legal-page-sheet.theme-cream tr,
+.legal-page-sheet.theme-cream td,
+.legal-page-sheet.theme-cream th {
+  border-color: rgba(0, 0, 0, 0.2) !important;
+  background-color: #f0eae1 !important;
+}
+
+.legal-page-sheet.theme-cream .meta-lbl {
+  color: #444444 !important;
+}
+
+/* Maintain high-contrast green/red status colors on cream background */
+.legal-page-sheet.theme-cream [style*="color:#1a7a4a"],
+.legal-page-sheet.theme-cream [style*="color: #1a7a4a"],
+.legal-page-sheet.theme-cream span[style*="color:#1a7a4a"],
+.legal-page-sheet.theme-cream strong[style*="color:#1a7a4a"],
+.legal-page-sheet.theme-cream .badge-green,
+.legal-page-sheet.theme-cream .digital-stamp {
+  color: #166534 !important;
+  border-color: #166534 !important;
+  background-color: rgba(22, 101, 52, 0.08) !important;
+}
+
+.legal-page-sheet.theme-cream [style*="color:#c0392b"],
+.legal-page-sheet.theme-cream [style*="color: #c0392b"],
+.legal-page-sheet.theme-cream span[style*="color:#c0392b"],
+.legal-page-sheet.theme-cream strong[style*="color:#c0392b"],
+.legal-page-sheet.theme-cream .badge-red {
+  color: #991b1b !important;
+  border-color: #991b1b !important;
+  background-color: rgba(153, 27, 27, 0.08) !important;
+}
+
+.legal-page-sheet.theme-cream [style*="color:#e67e22"],
+.legal-page-sheet.theme-cream [style*="color: #e67e22"],
+.legal-page-sheet.theme-cream span[style*="color:#e67e22"],
+.legal-page-sheet.theme-cream strong[style*="color:#e67e22"],
+.legal-page-sheet.theme-cream .badge-yellow {
+  color: #854d0e !important;
+  border-color: #854d0e !important;
+  background-color: rgba(133, 77, 14, 0.08) !important;
+}
+
+/* 2. BLACK THEME OVERRIDES (when it's black, text color is cream) */
+.legal-page-sheet.theme-black {
+  background-color: #0b1320 !important;
+  color: #f7f3ec !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+.legal-page-sheet.theme-black::before,
+.legal-page-sheet.theme-black::after {
+  background-color: #121c2c !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+}
+
+/* Apply cream text color to all text elements in the black docket sheet, excluding watermarks */
+.legal-page-sheet.theme-black :not(.legal-watermark) {
+  color: #f7f3ec !important;
+}
+
+.legal-page-sheet.theme-black .legal-watermark {
+  color: rgba(255, 255, 255, 0.03) !important;
+}
+
+.legal-page-sheet.theme-black svg {
+  stroke: #f7f3ec !important;
+}
+
+.legal-page-sheet.theme-black .legal-metadata-grid,
+.legal-page-sheet.theme-black table,
+.legal-page-sheet.theme-black tr,
+.legal-page-sheet.theme-black td,
+.legal-page-sheet.theme-black th {
+  border-color: rgba(255, 255, 255, 0.15) !important;
+  background-color: #122238 !important;
+}
+
+.legal-page-sheet.theme-black .meta-lbl {
+  color: #94a3b8 !important;
+}
+
+/* Maintain high-contrast green/red status colors on black background */
+.legal-page-sheet.theme-black [style*="color:#1a7a4a"],
+.legal-page-sheet.theme-black [style*="color: #1a7a4a"],
+.legal-page-sheet.theme-black span[style*="color:#1a7a4a"],
+.legal-page-sheet.theme-black strong[style*="color:#1a7a4a"],
+.legal-page-sheet.theme-black .badge-green,
+.legal-page-sheet.theme-black .digital-stamp {
+  color: #4ade80 !important;
+  border-color: #4ade80 !important;
+  background-color: rgba(74, 222, 128, 0.12) !important;
+}
+
+.legal-page-sheet.theme-black [style*="color:#c0392b"],
+.legal-page-sheet.theme-black [style*="color: #c0392b"],
+.legal-page-sheet.theme-black span[style*="color:#c0392b"],
+.legal-page-sheet.theme-black strong[style*="color:#c0392b"],
+.legal-page-sheet.theme-black .badge-red {
+  color: #f87171 !important;
+  border-color: #f87171 !important;
+  background-color: rgba(248, 113, 113, 0.12) !important;
+}
+
+.legal-page-sheet.theme-black [style*="color:#e67e22"],
+.legal-page-sheet.theme-black [style*="color: #e67e22"],
+.legal-page-sheet.theme-black span[style*="color:#e67e22"],
+.legal-page-sheet.theme-black strong[style*="color:#e67e22"],
+.legal-page-sheet.theme-black .badge-yellow {
+  color: #fbbf24 !important;
+  border-color: #fbbf24 !important;
+  background-color: rgba(251, 191, 36, 0.12) !important;
+}
+
+/* ==========================================================================
+   DOCUMENT SELECTOR POP-UP LIST BUTTONS & ACCESSIBILITY CONTRAST
+   ========================================================================== */
+.btn-select-report {
+  width: 100% !important;
+  text-align: left !important;
+  padding: 13px 16px !important;
+  background: var(--color-navy) !important;
+  border: 1px solid var(--color-border) !important;
+  border-radius: 8px !important;
+  color: #FFFFFF !important;
+  font-weight: 600 !important;
+  font-size: 14px !important;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  cursor: pointer !important;
+  transition: border-color 0.2s, background-color 0.2s, color 0.2s !important;
+  font-family: var(--font-body) !important;
+}
+
+.btn-select-report .report-name-text {
+  color: #FFFFFF !important;
+  transition: color 0.2s !important;
+}
+
+.btn-select-report .report-arrow {
+  color: var(--color-gold) !important;
+  font-size: 16px !important;
+  transition: color 0.2s !important;
+}
+
+/* Hover and Focus states */
+.btn-select-report:hover,
+.btn-select-report:focus {
+  border-color: var(--color-gold) !important;
+  background-color: rgba(201, 168, 76, 0.15) !important;
+}
+
+/* In light theme, when hovered or focused, the background becomes cream-colored, so the text/arrow must be black */
+body.light-theme .btn-select-report:hover,
+body.light-theme .btn-select-report:focus {
+  color: #000000 !important;
+  background-color: rgba(201, 168, 76, 0.12) !important;
+}
+
+body.light-theme .btn-select-report:hover .report-name-text,
+body.light-theme .btn-select-report:focus .report-name-text {
+  color: #000000 !important;
+}
+
+body.light-theme .btn-select-report:hover .report-arrow,
+body.light-theme .btn-select-report:focus .report-arrow {
+  color: #000000 !important;
+}
+
+

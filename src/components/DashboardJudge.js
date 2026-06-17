@@ -30,10 +30,10 @@ export const DashboardJudge = {
                             return `
                                 <div class="hearing-card" data-caseno="${c.caseNumber}" style="background: ${active ? 'rgba(46, 117, 182, 0.15)' : 'var(--color-navy)'}; border: 1px solid ${active ? 'var(--color-navy-sec)' : 'var(--color-border)'}; border-radius: 6px; padding: 12px; cursor: pointer; transition: all 0.2s;">
                                     <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
-                                        <span style="font-weight: 700; color: var(--color-text-main); font-size: 14px;">${c.accused.fullName}</span>
+                                        <span style="font-weight: 700; color: ${active ? 'var(--color-text-main)' : '#FFFFFF'}; font-size: 14px;">${c.accused.fullName}</span>
                                         <span style="height: 10px; width: 10px; background-color: ${dotColor}; border-radius: 50%; display: inline-block;" title="Status: ${c.applicationStatus}"></span>
                                     </div>
-                                    <div style="display: flex; justify-content: space-between; font-size: 11px; color: var(--color-text-muted);">
+                                    <div style="display: flex; justify-content: space-between; font-size: 11px; color: ${active ? 'var(--color-text-muted)' : '#cbd5e1'};">
                                         <span>${c.caseNumber}</span>
                                         <span style="font-weight: 600;">${c.bailType}</span>
                                     </div>
@@ -232,7 +232,7 @@ export const DashboardJudge = {
             <!-- Quantex Smart Decision Advice Panel -->
             <div class="card" id="decision-advice-panel" style="background: var(--color-card-dark); border: 1px solid var(--color-border); border-radius: 8px; padding: 25px; display: flex; flex-direction: column; gap: 20px;">
                 <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--color-border); padding-bottom: 10px; margin: 0;">
-                    <h3 style="color: var(--color-text-main); font-family: var(--font-brand); margin: 0;"</h3>
+                    <h3 style="color: var(--color-text-main); font-family: var(--font-brand); margin: 0;">Quantex Smart Decision Advice</h3>
                     <span style="font-size: 11px; font-family: var(--font-mono); color: var(--color-gold);">QUANTEX INTELLIGENCE ENGINE v4.2</span>
                 </div>
 
@@ -302,16 +302,16 @@ export const DashboardJudge = {
             <!-- Judicial Adjudication Action Bar + e-SIGN -->
             <div class="card" style="background: var(--color-card-dark); border: 1px solid var(--color-border); border-radius: 8px; padding: 25px; display: flex; flex-direction: column; gap: 20px;">
                 <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--color-border); padding-bottom: 10px; margin: 0;">
-                    <h3 style="color: var(--color-text-main); font-family: var(--font-brand); margin: 0;"</h3>
+                    <h3 style="color: var(--color-text-main); font-family: var(--font-brand); margin: 0;">Judicial Adjudication Panel</h3>
                     <span style="font-size: 11px; font-family: var(--font-mono); color: var(--color-danger); font-weight: 800;">PRESIDING JUDGE ENCRYPTED AUTHORIZATION</span>
                 </div>
 
                 <!-- Action Button Grid -->
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px;">
-                    <button class="btn" id="btn-grant-bail" style="background: ${state.adjudicationDecision === 'GRANTED' ? 'var(--color-success)' : 'rgba(74, 222, 128, 0.1)'}; border: 1px solid var(--color-success); color: #FFFFFF; font-weight: 700; padding: 12px 6px;">Grant Bail</button>
-                    <button class="btn" id="btn-grant-cond" style="background: ${state.adjudicationDecision === 'CONDITIONAL' ? 'var(--color-warning)' : 'rgba(251, 191, 36, 0.1)'}; border: 1px solid var(--color-warning); color: #FFFFFF; font-weight: 700; padding: 12px 6px;">Grant With Conditions</button>
-                    <button class="btn" id="btn-deny-bail" style="background: ${state.adjudicationDecision === 'DENIED' ? 'var(--color-danger)' : 'rgba(248, 113, 113, 0.1)'}; border: 1px solid var(--color-danger); color: #FFFFFF; font-weight: 700; padding: 12px 6px;">Deny Bail</button>
-                    <button class="btn" id="btn-adjourn" style="background: ${state.adjudicationDecision === 'ADJOURNED' ? '#4b5563' : 'rgba(75, 85, 99, 0.1)'}; border: 1px solid #4b5563; color: #FFFFFF; font-weight: 700; padding: 12px 6px;">Adjourn Hearing</button>
+                    <button class="btn" id="btn-grant-bail" style="background: ${state.adjudicationDecision === 'GRANTED' ? 'var(--color-success)' : 'rgba(74, 222, 128, 0.1)'}; border: 1px solid var(--color-success); color: ${state.adjudicationDecision === 'GRANTED' ? '#FFFFFF' : 'var(--color-success)'}; font-weight: 700; padding: 12px 6px;">Grant Bail</button>
+                    <button class="btn" id="btn-grant-cond" style="background: ${state.adjudicationDecision === 'CONDITIONAL' ? 'var(--color-warning)' : 'rgba(251, 191, 36, 0.1)'}; border: 1px solid var(--color-warning); color: ${state.adjudicationDecision === 'CONDITIONAL' ? '#FFFFFF' : 'var(--color-warning)'}; font-weight: 700; padding: 12px 6px;">Grant With Conditions</button>
+                    <button class="btn" id="btn-deny-bail" style="background: ${state.adjudicationDecision === 'DENIED' ? 'var(--color-danger)' : 'rgba(248, 113, 113, 0.1)'}; border: 1px solid var(--color-danger); color: ${state.adjudicationDecision === 'DENIED' ? '#FFFFFF' : 'var(--color-danger)'}; font-weight: 700; padding: 12px 6px;">Deny Bail</button>
+                    <button class="btn" id="btn-adjourn" style="background: ${state.adjudicationDecision === 'ADJOURNED' ? '#4b5563' : 'rgba(75, 85, 99, 0.1)'}; border: 1px solid #4b5563; color: ${state.adjudicationDecision === 'ADJOURNED' ? '#FFFFFF' : 'var(--color-text-main)'}; font-weight: 700; padding: 12px 6px;">Adjourn Hearing</button>
                 </div>
 
                 <!-- Custom Remarks Text Area (Visible when conditions or deny is picked) -->

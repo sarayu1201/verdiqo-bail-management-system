@@ -37,6 +37,7 @@ export const DashboardStaff = {
         });
         container.querySelector('#staff-tab-new').addEventListener('click', () => {
             state.staffActiveTab = 'new-form';
+            onUpdate();
         });
     },
     renderDashboard(mount, state, onUpdate) {

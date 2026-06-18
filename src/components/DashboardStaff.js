@@ -251,7 +251,7 @@ export const DashboardStaff = {
                 </div>
 
                 <!-- Form Panel -->
-                <form id="new-bail-form-element">
+                <form id="new-bail-form-element" novalidate>
                     <!-- SECTION 1 -->
                     <div id="form-section-1-view" style="display: ${state.formSectionIndex === 1 ? 'block' : 'none'};">
                         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; margin-bottom: 20px;">

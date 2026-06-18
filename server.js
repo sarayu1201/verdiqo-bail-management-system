@@ -1,11 +1,54 @@
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
+const { MongoClient } = require('mongodb');
 
 const PORT = process.env.PORT || 8000;
 const PUBLIC_DIR = path.resolve(__dirname);
 const DB_FILE = path.join(PUBLIC_DIR, 'data', 'db.json');
 const LOGS_FILE = path.join(PUBLIC_DIR, 'data', 'logs.json');
+
+// MongoDB Configuration
+const MONGO_URI = process.env.MONGODB_URI || 'mongodb+srv://uyaras:sarayu@cluster0.p0sbdsi.mongodb.net/?appName=Cluster0';
+const client = new MongoClient(MONGO_URI);
+let db = null;
+
+// Connect to MongoDB on startup
+async function connectDB() {
+    try {
+        console.log("Connecting to MongoDB Atlas...");
+        await client.connect();
+        db = client.db('verdiqo');
+        console.log("Connected successfully to MongoDB Atlas (database: 'verdiqo')");
+
+        // Seed cases if collection is empty
+        const casesCount = await db.collection('cases').countDocuments();
+        if (casesCount === 0 && fs.existsSync(DB_FILE)) {
+            console.log("Seeding MongoDB cases from local db.json...");
+            const data = fs.readFileSync(DB_FILE, 'utf8');
+            const parsed = JSON.parse(data || '[]');
+            if (parsed.length > 0) {
+                await db.collection('cases').insertMany(parsed);
+                console.log(`Seeded ${parsed.length} cases.`);
+            }
+        }
+
+        // Seed logs if collection is empty
+        const logsCount = await db.collection('logs').countDocuments();
+        if (logsCount === 0 && fs.existsSync(LOGS_FILE)) {
+            console.log("Seeding MongoDB logs from local logs.json...");
+            const data = fs.readFileSync(LOGS_FILE, 'utf8');
+            const parsed = JSON.parse(data || '[]');
+            if (parsed.length > 0) {
+                await db.collection('logs').insertMany(parsed);
+                console.log(`Seeded ${parsed.length} logs.`);
+            }
+        }
+    } catch (err) {
+        console.error("MongoDB Connection/Seeding failed. Operating in local file fallback mode.", err);
+        db = null; // Ensure we fall back
+    }
+}
 
 // Load .env secure government credentials if present
 const envPath = path.join(PUBLIC_DIR, '.env');
@@ -42,15 +85,26 @@ const MIME_TYPES = {
     '.ico': 'image/x-icon'
 };
 
-const server = http.createServer((req, res) => {
+const server = http.createServer(async (req, res) => {
     // API endpoint GET /api/cases
     if (req.method === 'GET' && req.url === '/api/cases') {
-        res.writeHead(200, { 'Content-Type': 'application/json' });
-        if (fs.existsSync(DB_FILE)) {
-            const data = fs.readFileSync(DB_FILE, 'utf8');
-            res.end(data || '[]');
+        if (db) {
+            try {
+                const cases = await db.collection('cases').find({}, { projection: { _id: 0 } }).toArray();
+                res.writeHead(200, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify(cases));
+            } catch (err) {
+                res.writeHead(500, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ error: err.message }));
+            }
         } else {
-            res.end('[]');
+            res.writeHead(200, { 'Content-Type': 'application/json' });
+            if (fs.existsSync(DB_FILE)) {
+                const data = fs.readFileSync(DB_FILE, 'utf8');
+                res.end(data || '[]');
+            } else {
+                res.end('[]');
+            }
         }
         return;
     }
@@ -59,15 +113,29 @@ const server = http.createServer((req, res) => {
     if (req.method === 'POST' && req.url === '/api/cases') {
         let body = '';
         req.on('data', chunk => { body += chunk; });
-        req.on('end', () => {
+        req.on('end', async () => {
             try {
-                JSON.parse(body);
-                fs.writeFileSync(DB_FILE, body, 'utf8');
-                res.writeHead(200, { 'Content-Type': 'application/json' });
-                res.end(JSON.stringify({ success: true }));
+                const parsed = JSON.parse(body);
+                if (db) {
+                    if (Array.isArray(parsed)) {
+                        await db.collection('cases').deleteMany({});
+                        if (parsed.length > 0) {
+                            await db.collection('cases').insertMany(parsed);
+                        }
+                        res.writeHead(200, { 'Content-Type': 'application/json' });
+                        res.end(JSON.stringify({ success: true }));
+                    } else {
+                        res.writeHead(400, { 'Content-Type': 'application/json' });
+                        res.end(JSON.stringify({ error: 'Invalid payload: expected an array' }));
+                    }
+                } else {
+                    fs.writeFileSync(DB_FILE, body, 'utf8');
+                    res.writeHead(200, { 'Content-Type': 'application/json' });
+                    res.end(JSON.stringify({ success: true }));
+                }
             } catch (err) {
                 res.writeHead(400, { 'Content-Type': 'application/json' });
-                res.end(JSON.stringify({ error: 'Invalid JSON body' }));
+                res.end(JSON.stringify({ error: 'Invalid JSON body or db error: ' + err.message }));
             }
         });
         return;
@@ -75,12 +143,23 @@ const server = http.createServer((req, res) => {
 
     // API endpoint GET /api/logs
     if (req.method === 'GET' && req.url === '/api/logs') {
-        res.writeHead(200, { 'Content-Type': 'application/json' });
-        if (fs.existsSync(LOGS_FILE)) {
-            const data = fs.readFileSync(LOGS_FILE, 'utf8');
-            res.end(data || '[]');
+        if (db) {
+            try {
+                const logs = await db.collection('logs').find({}, { projection: { _id: 0 } }).toArray();
+                res.writeHead(200, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify(logs));
+            } catch (err) {
+                res.writeHead(500, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ error: err.message }));
+            }
         } else {
-            res.end('[]');
+            res.writeHead(200, { 'Content-Type': 'application/json' });
+            if (fs.existsSync(LOGS_FILE)) {
+                const data = fs.readFileSync(LOGS_FILE, 'utf8');
+                res.end(data || '[]');
+            } else {
+                res.end('[]');
+            }
         }
         return;
     }
@@ -89,15 +168,29 @@ const server = http.createServer((req, res) => {
     if (req.method === 'POST' && req.url === '/api/logs') {
         let body = '';
         req.on('data', chunk => { body += chunk; });
-        req.on('end', () => {
+        req.on('end', async () => {
             try {
-                JSON.parse(body);
-                fs.writeFileSync(LOGS_FILE, body, 'utf8');
-                res.writeHead(200, { 'Content-Type': 'application/json' });
-                res.end(JSON.stringify({ success: true }));
+                const parsed = JSON.parse(body);
+                if (db) {
+                    if (Array.isArray(parsed)) {
+                        await db.collection('logs').deleteMany({});
+                        if (parsed.length > 0) {
+                            await db.collection('logs').insertMany(parsed);
+                        }
+                        res.writeHead(200, { 'Content-Type': 'application/json' });
+                        res.end(JSON.stringify({ success: true }));
+                    } else {
+                        res.writeHead(400, { 'Content-Type': 'application/json' });
+                        res.end(JSON.stringify({ error: 'Invalid payload: expected an array' }));
+                    }
+                } else {
+                    fs.writeFileSync(LOGS_FILE, body, 'utf8');
+                    res.writeHead(200, { 'Content-Type': 'application/json' });
+                    res.end(JSON.stringify({ success: true }));
+                }
             } catch (err) {
                 res.writeHead(400, { 'Content-Type': 'application/json' });
-                res.end(JSON.stringify({ error: 'Invalid JSON body' }));
+                res.end(JSON.stringify({ error: 'Invalid JSON body or db error: ' + err.message }));
             }
         });
         return;
@@ -136,15 +229,20 @@ const server = http.createServer((req, res) => {
     });
 });
 
-server.listen(PORT, () => {
-    console.log(`Server running at http://localhost:${PORT}/`);
-    console.log(`Data file path: ${DB_FILE}`);
-    console.log(`Logs file path: ${LOGS_FILE}`);
-    if (process.env.UIDAI_SUB_AUA_KEY) {
-        console.log(`\x1b[32m[SECURE GATEWAY] Loaded UIDAI Aadhaar e-Sign license key: ${process.env.UIDAI_SUB_AUA_KEY.substring(0, 15)}...\x1b[0m`);
-        console.log(`\x1b[32m[SECURE GATEWAY] Loaded AP MeeBhoomi revenue mutation secret: ${process.env.Bhudar_REVENUE_SECRET.substring(0, 15)}...\x1b[0m`);
-        console.log(`\x1b[32m[SECURE GATEWAY] IPsec VPN Tunnel configured on gov-port: ${process.env.GOV_VPN_TUNNEL_PORT}\x1b[0m`);
-    } else {
-        console.log(`\x1b[33m[SECURE GATEWAY] Gateway credentials not detected. Operating in mock offline sandbox mode.\x1b[0m`);
-    }
-});
+async function main() {
+    await connectDB();
+    server.listen(PORT, () => {
+        console.log(`Server running at http://localhost:${PORT}/`);
+        console.log(`Data file path: ${DB_FILE}`);
+        console.log(`Logs file path: ${LOGS_FILE}`);
+        if (process.env.UIDAI_SUB_AUA_KEY) {
+            console.log(`\x1b[32m[SECURE GATEWAY] Loaded UIDAI Aadhaar e-Sign license key: ${process.env.UIDAI_SUB_AUA_KEY.substring(0, 15)}...\x1b[0m`);
+            console.log(`\x1b[32m[SECURE GATEWAY] Loaded AP MeeBhoomi revenue mutation secret: ${process.env.Bhudar_REVENUE_SECRET.substring(0, 15)}...\x1b[0m`);
+            console.log(`\x1b[32m[SECURE GATEWAY] IPsec VPN Tunnel configured on gov-port: ${process.env.GOV_VPN_TUNNEL_PORT}\x1b[0m`);
+        } else {
+            console.log(`\x1b[33m[SECURE GATEWAY] Gateway credentials not detected. Operating in mock offline sandbox mode.\x1b[0m`);
+        }
+    });
+}
+
+main();

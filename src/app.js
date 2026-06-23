@@ -444,7 +444,7 @@ class ApplicationState {
         modalOverlay.style = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(5,12,22,0.85); display: flex; justify-content: center; align-items: center; z-index: 1000; padding: 16px; box-sizing: border-box;';
         
         modalOverlay.innerHTML = `
-            <div class="modal-content" style="font-family: 'Inter', sans-serif; background: var(--color-card-dark); border: 2px solid var(--color-border); border-radius: 12px; width: 100%; max-width: 520px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.6);">
+            <div class="modal-content" style="font-family: 'Public Sans', sans-serif; background: var(--color-card-dark); border: 2px solid var(--color-border); border-radius: 12px; width: 100%; max-width: 520px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.6);">
                 
                 <!-- Modal Header -->
                 <div style="background: var(--color-header-dark); border-bottom: 2px solid #FFD700; padding: 16px 20px; display: flex; align-items: center; gap: 12px;">

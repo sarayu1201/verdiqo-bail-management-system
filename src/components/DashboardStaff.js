@@ -98,10 +98,10 @@ export const DashboardStaff = {
                 return `
                     <tr class="clickable-row" data-caseno="${c.caseNumber}" style="border-bottom: 1px solid var(--color-border); cursor: pointer; transition: background 0.2s;">
                         <td style="padding: 14px 12px; color: var(--color-text-main); font-size: 15px;">${c.accused.fullName}</td>
-                        <td style="padding: 14px 12px; font-family: var(--font-mono); color: var(--color-text-muted); font-size: 14px;">${c.caseNumber}</td>
-                        <td style="padding: 14px 12px; color: var(--color-text-muted); font-size: 14px;">${c.ipcSections}</td>
-                        <td style="padding: 14px 12px; color: var(--color-text-muted); font-size: 14px;">${c.bailType}</td>
-                        <td style="padding: 14px 12px; font-family: var(--font-mono); color: var(--color-text-muted); font-size: 14px;">${c.hearingDate ? c.hearingDate.split('T')[1] || '10:30' : '10:30'}</td>
+                        <td style="padding: 14px 12px; font-family: var(--font-mono); color: var(--color-text-main); font-size: 14px;">${c.caseNumber}</td>
+                        <td style="padding: 14px 12px; color: var(--color-text-main); font-size: 14px;">${c.ipcSections}</td>
+                        <td style="padding: 14px 12px; color: var(--color-text-main); font-size: 14px;">${c.bailType}</td>
+                        <td style="padding: 14px 12px; font-family: var(--font-mono); color: var(--color-text-main); font-size: 14px;">${c.hearingDate ? c.hearingDate.split('T')[1] || '10:30' : '10:30'}</td>
                         <td style="padding: 14px 12px;">
                             <span class="badge" style="background: ${badgeBg}; color: ${badgeColor}; padding: 5px 10px; border-radius: 4px; font-size: 12.5px; font-weight: 700;">${status}</span>
                         </td>

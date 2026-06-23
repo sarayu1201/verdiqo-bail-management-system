@@ -533,15 +533,15 @@ function updateUI() {
                 <div style="flex: 1; background: #128807;"></div>
             </div>
             <!-- Top Navbar -->
-            <header class="top-navbar" style="background: var(--color-header-dark); border-bottom: 2px solid var(--color-border); padding: 12px 25px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.15);">
+            <header class="top-navbar" style="background: linear-gradient(135deg, #1b3f6b 0%, #11294a 100%); border-bottom: 2px solid var(--color-border); padding: 12px 25px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.18);">
                 <div class="brand-section" style="display: flex; align-items: center; gap: 15px;">
                     <div class="emblem-svg-container" style="display: flex; align-items: center; justify-content: center;">
-                        <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="var(--color-gold)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0 0 3px rgba(212,175,55,0.4));">
+                        <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="#FFD700" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0 0 4px rgba(255,215,0,0.5));">
                             <!-- Base -->
                             <path d="M8 21h8M12 17v4" />
                             <!-- Pillar -->
                             <path d="M12 5v12" />
-                            <circle cx="12" cy="4" r="1.5" fill="var(--color-gold)" />
+                            <circle cx="12" cy="4" r="1.5" fill="#FFD700" />
                             <!-- Main Beam -->
                             <path d="M5 7h14" />
                             <!-- Left Hanger & Pan -->
@@ -553,26 +553,29 @@ function updateUI() {
                         </svg>
                     </div>
                     <div>
-                        <h1 style="color: #FFFFFF; font-family: var(--font-brand); font-size: 18px; margin: 0; font-weight: 700; letter-spacing: 0.5px; display: flex; align-items: center; gap: 10px;">
-                            VERDIQO <span style="font-size: 12px; color: var(--color-gold); background: rgba(212,175,55,0.1); border: 1px solid rgba(212,175,55,0.3); padding: 2px 8px; border-radius: 4px; font-weight: 600; font-family: var(--font-body); letter-spacing: 0.5px; text-transform: uppercase;">e-Courts Portal</span>
+                        <h1 style="color: #FFFFFF; font-family: var(--font-brand); font-size: 19px; margin: 0; font-weight: 700; letter-spacing: 0.5px; display: flex; align-items: center; gap: 10px;">
+                            VERDIQO <span style="font-size: 11.5px; color: #0a0f18; background: #FFD700; border: none; padding: 3px 8px; border-radius: 4px; font-weight: 800; font-family: var(--font-body); letter-spacing: 0.5px; text-transform: uppercase; box-shadow: 0 2px 4px rgba(0,0,0,0.15);">e-Courts Portal</span>
                         </h1>
-                        <p style="color: rgba(255,255,255,0.65); font-size: 10.5px; margin: 3px 0 0 0; font-family: var(--font-body); font-weight: 500; letter-spacing: 0.5px;">Integrated Bail Decision Support Desk • Government of India</p>
+                        <p style="color: rgba(255,255,255,0.75); font-size: 11px; margin: 3px 0 0 0; font-family: var(--font-body); font-weight: 500; letter-spacing: 0.5px;">Integrated Bail Decision Support Desk • Government of India</p>
                     </div>
                 </div>
 
                 <div class="nav-actions" style="display: flex; align-items: center; gap: 15px;">
-                    <div class="secure-badge" style="display: flex; align-items: center; gap: 6px; background: rgba(18, 136, 7, 0.12); border: 1px solid rgba(18, 136, 7, 0.3); padding: 4px 10px; border-radius: 20px; font-size: 10px; color: #5cdb5c; font-weight: 700; letter-spacing: 0.5px; font-family: var(--font-mono);">
+                    <div class="secure-badge" style="display: flex; align-items: center; gap: 6px; background: rgba(18, 136, 7, 0.15); border: 1px solid rgba(18, 136, 7, 0.4); padding: 4px 12px; border-radius: 20px; font-size: 10px; color: #81e681; font-weight: 700; letter-spacing: 0.5px; font-family: var(--font-mono);">
                         <span style="display: inline-block; width: 6px; height: 6px; background: #5cdb5c; border-radius: 50%; box-shadow: 0 0 8px #5cdb5c; animation: pulseGreen 2s infinite;"></span>
                         NIC-NET SECURE
                     </div>
                     <button class="theme-toggle-btn-mock" id="global-theme-toggle-btn" title="Toggle Theme" style="display: flex; align-items: center; justify-content: center; width: 34px; height: 34px; background: rgba(255,255,255,0.06); border: 1px solid var(--color-border); border-radius: 6px; cursor: pointer; font-size: 14px; color: #FFFFFF; transition: background 0.2s;">
                         ${document.body.classList.contains('light-theme') ? '🌙' : '☀️'}
                     </button>
-                    <div class="user-info-display" style="text-align: right; line-height: 1.3;">
-                        <div style="color: #FFFFFF; font-size: 13px; font-weight: 700;">${AppState.currentUser.name}</div>
-                        <div style="font-size: 10px; color: rgba(255,255,255,0.55); text-transform: uppercase; letter-spacing: 0.8px;">${AppState.currentUser.designation}</div>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <div class="user-avatar" style="width: 32px; height: 32px; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.25); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #FFD700; font-weight: 700; font-size: 14px;">${AppState.currentUser.name.charAt(0)}</div>
+                        <div class="user-info-display" style="text-align: left; line-height: 1.3;">
+                            <div style="color: #FFFFFF; font-size: 13.5px; font-weight: 700;">${AppState.currentUser.name}</div>
+                            <div style="font-size: 9.5px; color: rgba(255,255,255,0.70); text-transform: uppercase; letter-spacing: 0.8px; font-weight: 600;">${AppState.currentUser.designation}</div>
+                        </div>
                     </div>
-                    <button class="btn btn-secondary" id="global-logout-btn" style="font-size: 12px; font-weight: 700; border-color: var(--color-border); color: #FFFFFF; background: rgba(255,255,255,0.05); padding: 6px 14px; white-space: nowrap;">Logout</button>
+                    <button class="btn" id="global-logout-btn" style="font-size: 12.5px; font-weight: 700; border: 1px solid rgba(255,255,255,0.25); color: #FFFFFF; background: rgba(255,255,255,0.08); padding: 7px 15px; border-radius: 6px; cursor: pointer; transition: all 0.2s; white-space: nowrap;">Logout</button>
                 </div>
             </header>
             <style>
@@ -583,6 +586,15 @@ function updateUI() {
                 }
                 .theme-toggle-btn-mock:hover {
                     background: rgba(255,255,255,0.12) !important;
+                }
+                #global-logout-btn:hover {
+                    background: rgba(255, 68, 68, 0.15) !important;
+                    border-color: rgba(255, 68, 68, 0.4) !important;
+                    color: #ff9999 !important;
+                    transform: translateY(-0.5px);
+                }
+                #global-logout-btn:active {
+                    transform: translateY(0);
                 }
             </style>
             <!-- Main Workspace content -->
@@ -652,40 +664,92 @@ function renderLogin(root) {
         if (activeRole === 'CITIZEN') {
             inputFields = `
                 <div class="form-group" style="display: flex; flex-direction: column; gap: 6px; margin-bottom: 15px;">
-                    <label style="color: var(--color-text-muted); font-size: 13px;">Aadhaar / Case Number</label>
-                    <input type="text" id="login-username" class="form-input" style="background: var(--color-navy); border: 1px solid var(--color-border); padding: 10px; color: #FFFFFF; font-family: var(--font-mono); border-radius: 4px;" required placeholder="e.g. BMS/2026/0042" value="BMS/2026/0042">
+                    <label style="color: var(--color-text-muted); font-size: 13px; font-weight: 500;">Aadhaar / Case Number</label>
+                    <input type="text" id="login-username" class="form-input" style="background: var(--color-navy); border: 1px solid var(--color-border); padding: 12px; color: #FFFFFF; font-family: var(--font-mono); border-radius: 6px; font-size: 14px;" required placeholder="e.g. BMS/2026/0042" value="BMS/2026/0042">
                 </div>
                 <div class="form-group" style="display: flex; flex-direction: column; gap: 6px; margin-bottom: 20px;">
-                    <label style="color: var(--color-text-muted); font-size: 13px;">OTP Verification</label>
-                    <input type="text" id="login-password" class="form-input" style="background: var(--color-navy); border: 1px solid var(--color-border); padding: 10px; color: #FFFFFF; font-family: var(--font-mono); border-radius: 4px;" required placeholder="Awaiting OTP" value="123456" disabled>
+                    <label style="color: var(--color-text-muted); font-size: 13px; font-weight: 500;">OTP Verification</label>
+                    <input type="text" id="login-password" class="form-input" style="background: var(--color-navy); border: 1px solid var(--color-border); padding: 12px; color: #FFFFFF; font-family: var(--font-mono); border-radius: 6px; font-size: 14px;" required placeholder="Awaiting OTP" value="123456" disabled>
                 </div>
             `;
         } else {
             inputFields = `
                 <div class="form-group" style="display: flex; flex-direction: column; gap: 6px; margin-bottom: 15px;">
-                    <label style="color: var(--color-text-muted); font-size: 13px;">System Username</label>
-                    <input type="text" id="login-username" class="form-input" style="background: var(--color-navy); border: 1px solid var(--color-border); padding: 10px; color: #FFFFFF; font-family: var(--font-mono); border-radius: 4px;" required value="${defaultUser}">
+                    <label style="color: var(--color-text-muted); font-size: 13px; font-weight: 500;">System Username</label>
+                    <input type="text" id="login-username" class="form-input" style="background: var(--color-navy); border: 1px solid var(--color-border); padding: 12px; color: #FFFFFF; font-family: var(--font-mono); border-radius: 6px; font-size: 14px;" required value="${defaultUser}">
                 </div>
                 <div class="form-group" style="display: flex; flex-direction: column; gap: 6px; margin-bottom: 20px;">
-                    <label style="color: var(--color-text-muted); font-size: 13px;">Access Password</label>
-                    <input type="password" id="login-password" class="form-input" style="background: var(--color-navy); border: 1px solid var(--color-border); padding: 10px; color: #FFFFFF; font-family: var(--font-mono); border-radius: 4px;" required value="${defaultPass}">
+                    <label style="color: var(--color-text-muted); font-size: 13px; font-weight: 500;">Access Password</label>
+                    <input type="password" id="login-password" class="form-input" style="background: var(--color-navy); border: 1px solid var(--color-border); padding: 12px; color: #FFFFFF; font-family: var(--font-mono); border-radius: 6px; font-size: 14px;" required value="${defaultPass}">
                 </div>
             `;
         }
 
         root.innerHTML = `
+            <style>
+                @keyframes slideUpFade {
+                    from {
+                        opacity: 0;
+                        transform: translateY(20px);
+                    }
+                    to {
+                        opacity: 1;
+                        transform: translateY(0);
+                    }
+                }
+                .login-card {
+                    animation: slideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+                    box-shadow: 0 15px 35px rgba(0,0,0,0.3) !important;
+                    transition: all 0.3s ease !important;
+                }
+                body.light-theme .login-card {
+                    background: #ffffff !important;
+                    border: 1px solid #b0c4de !important;
+                    box-shadow: 0 10px 30px rgba(29, 58, 104, 0.08) !important;
+                }
+                .form-input, select {
+                    transition: all 0.2s ease !important;
+                    outline: none !important;
+                }
+                .form-input:focus, select:focus {
+                    border-color: var(--color-navy-sec) !important;
+                    box-shadow: 0 0 0 3px rgba(59, 107, 182, 0.25) !important;
+                }
+                .login-btn {
+                    transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1) !important;
+                    cursor: pointer;
+                }
+                .login-btn:hover {
+                    transform: translateY(-1.5px);
+                    box-shadow: 0 5px 15px rgba(59, 107, 182, 0.35) !important;
+                }
+                .login-btn:active {
+                    transform: translateY(0);
+                }
+            </style>
             <div style="min-height: 100vh; background: var(--color-bg-dark); display: flex; justify-content: center; align-items: center; padding: 20px; box-sizing: border-box;">
-                <div class="login-card" style="background: var(--color-card-dark); border: 2px solid var(--color-border); border-radius: 12px; width: 100%; max-width: 440px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+                <div class="login-card" style="background: var(--color-card-dark); border: 2px solid var(--color-border); border-radius: 12px; width: 100%; max-width: 440px; padding: 30px;">
                     <div style="text-align: center; margin-bottom: 25px;">
-                        <span style="font-size: 40px; color: var(--color-gold);">⚖️</span>
-                        <h2 style="color: #FFFFFF; font-family: var(--font-brand); margin: 10px 0 5px 0; font-size: 22px; font-weight: 800;">VERDIQO Bail Management System</h2>
-                        <p style="color: var(--color-text-muted); margin: 0; font-size: 12px; letter-spacing: 1px; text-transform: uppercase;">Quantex Adjudication Systems Portal</p>
+                        <div style="display: flex; justify-content: center; margin-bottom: 8px;">
+                            <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="#FFD700" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0 0 5px rgba(255,215,0,0.5));">
+                                <path d="M8 21h8M12 17v4" />
+                                <path d="M12 5v12" />
+                                <circle cx="12" cy="4" r="1.5" fill="#FFD700" />
+                                <path d="M5 7h14" />
+                                <path d="M5 7l-2.5 7h5L5 7z" />
+                                <path d="M2.5 14c0 1.5 1.1 2 2.5 2s2.5-.5 2.5-2" />
+                                <path d="M19 7l-2.5 7h5L19 7z" />
+                                <path d="M16.5 14c0 1.5 1.1 2 2.5 2s2.5-.5 2.5-2" />
+                            </svg>
+                        </div>
+                        <h2 style="color: var(--color-text-main); font-family: var(--font-brand); margin: 10px 0 5px 0; font-size: 23px; font-weight: 800;">VERDIQO Bail Management System</h2>
+                        <p style="color: var(--color-text-muted); margin: 0; font-size: 12px; letter-spacing: 0.5px; font-weight: 500;">by Quantex Intelligence Systems</p>
                     </div>
 
                     <!-- Role selector dropdown -->
                     <div class="form-group" style="display: flex; flex-direction: column; gap: 6px; margin-bottom: 20px;">
-                        <label style="color: var(--color-text-muted); font-size: 13px;">Adjudication System Role</label>
-                        <select id="login-role-selector" style="background: var(--color-navy); border: 1px solid var(--color-border); padding: 10px; color: #FFFFFF; font-weight: 700; border-radius: 4px; cursor: pointer;">
+                        <label style="color: var(--color-text-muted); font-size: 13px; font-weight: 500;">Adjudication System Role</label>
+                        <select id="login-role-selector" style="background: var(--color-navy); border: 1px solid var(--color-border); padding: 12px; color: #FFFFFF; font-weight: 600; font-family: var(--font-body); font-size: 14px; border-radius: 6px; cursor: pointer; width: 100%;">
                             <option value="STAFF" ${activeRole === 'STAFF' ? 'selected' : ''}>Court Staff Portal</option>
                             <option value="JUDGE" ${activeRole === 'JUDGE' ? 'selected' : ''}>Presiding Judge Portal</option>
                             <option value="ADMIN" ${activeRole === 'ADMIN' ? 'selected' : ''}>District Head Judge Portal</option>
@@ -696,7 +760,7 @@ function renderLogin(root) {
                     <form id="login-auth-form">
                         ${inputFields}
                         
-                        <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px; font-weight: 800; font-size: 14px; background: var(--color-navy-sec); border-color: var(--color-navy-sec); color: #FFFFFF; margin-bottom: 20px;">
+                        <button type="submit" class="btn btn-primary login-btn" style="width: 100%; padding: 14px; font-weight: 700; font-size: 14.5px; background: var(--color-navy-sec); border: none; color: #FFFFFF; border-radius: 6px; margin-top: 10px; margin-bottom: 20px;">
                             Sign in with Cryptographic Security
                         </button>
                     </form>

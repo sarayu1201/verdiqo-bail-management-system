@@ -47,51 +47,51 @@
    LIGHT THEME OVERRIDES (Sun ☀️ Mode Activation)
    ========================================================================== */
 body.light-theme {
-  --color-bg-dark: #f8f6f0; /* Ultra-clean light warm cream */
-  --color-header-dark: #0f172a; /* Deep anchor slate header */
+  --color-bg-dark: #f0f4f8; /* Official e-Courts clean light blue-grey background */
+  --color-header-dark: #204b8d; /* Official e-Courts prestigious corporate blue header */
   --color-card-dark: #ffffff; /* Pure white card background */
-  --color-table-header: #f1f5f9; /* Light slate gray */
-  --color-border: #cbd5e1; /* Subtle slate border */
+  --color-table-header: #e2ebf6; /* Official e-Courts light blue header accent */
+  --color-border: #b0c4de; /* Clean light steel blue borders */
   
-  --color-navy: #0f172a; /* Deep slate navy for Light Mode */
-  --color-navy-sec: #0369a1; /* Deep professional blue for Light Mode */
+  --color-navy: #1d3a68; /* Dark executive blue for text and labels */
+  --color-navy-sec: #3b6bb6; /* Medium blue for main buttons and active highlights */
   
-  --color-text-main: #0f172a; /* High contrast deep slate navy */
-  --color-text-muted: #1e293b; /* Dark slate gray descriptive body (extreme high contrast against white) */
-  --color-gold: #92711d; /* Elegant deep bronze-gold for Light Mode accessibility */
-  --color-gold-light: #7c5a03; /* Rich deep gold highlight */
-  --color-gold-dim: #856404; /* High contrast bronze/gold */
+  --color-text-main: #1d3a68; /* High contrast dark corporate blue */
+  --color-text-muted: #4a5568; /* Slate grey descriptive body text */
+  --color-gold: #a37a1a; /* Professional bronze-gold representation of Justice scale */
+  --color-gold-light: #b8860b; /* Rich dark golden accent */
+  --color-gold-dim: #856404; /* Accessible gold */
   
-  --color-blue-num: #0369a1; /* Deep professional blue statistics numbers */
+  --color-blue-num: #204b8d; /* Professional blue statistics numbers */
   
-  /* High-Contrast Light Mode Status Colors (Sufficient AAA Accessibility) */
-  --color-success: #166534; /* Deep forest green */
-  --color-warning: #854d0e; /* Deep amber orange/brown */
-  --color-danger: #991b1b; /* Deep crimson red */
+  /* Government-grade status shades */
+  --color-success: #287a43; /* Stable green */
+  --color-warning: #d97706; /* Clear warning amber */
+  --color-danger: #dc2626; /* Critical danger red */
 }
 
 /* Explicit Light Theme contrast helpers and status overrides (excluding buttons) */
 body.light-theme :not(button):not([class*="btn"])[style*="color:var(--color-success)"],
 body.light-theme :not(button):not([class*="btn"])[style*="color: var(--color-success)"] {
-  color: #166534 !important;
+  color: #287a43 !important;
   font-weight: 700 !important;
 }
 
 body.light-theme :not(button):not([class*="btn"])[style*="color:var(--color-warning)"],
 body.light-theme :not(button):not([class*="btn"])[style*="color: var(--color-warning)"] {
-  color: #854d0e !important;
+  color: #d97706 !important;
   font-weight: 700 !important;
 }
 
 body.light-theme :not(button):not([class*="btn"])[style*="color:var(--color-danger)"],
 body.light-theme :not(button):not([class*="btn"])[style*="color: var(--color-danger)"] {
-  color: #991b1b !important;
+  color: #dc2626 !important;
   font-weight: 700 !important;
 }
 
 body.light-theme :not(button):not([class*="btn"])[style*="color:var(--color-text-muted)"],
 body.light-theme :not(button):not([class*="btn"])[style*="color: var(--color-text-muted)"] {
-  color: #1e293b !important;
+  color: #4a5568 !important;
 }
 
 body.light-theme .encrypted-auth-label {
@@ -748,8 +748,13 @@ body.light-theme textarea:focus {
 }
 
 body.light-theme .btn-primary {
-  color: var(--color-text-main);
-  border-color: var(--color-border);
+  background-color: var(--color-navy-sec) !important;
+  color: #ffffff !important;
+  border-color: var(--color-navy-sec) !important;
+}
+body.light-theme .btn-primary:hover {
+  background-color: #2b518e !important;
+  border-color: #2b518e !important;
 }
 
 .btn-success {
@@ -795,7 +800,14 @@ body.light-theme .btn-danger:hover {
 }
 
 body.light-theme .btn-secondary {
-  color: var(--color-text-main);
+  background-color: #586375 !important;
+  color: #ffffff !important;
+  border-color: #586375 !important;
+}
+body.light-theme .btn-secondary:hover {
+  background-color: #434d5b !important;
+  border-color: #434d5b !important;
+  color: #ffffff !important;
 }
 
 .btn-secondary:hover {

@@ -1,4 +1,5 @@
 import { db, getCasesByStatus } from '../verdiqo_db.js';
+import { VerificationEngine } from '../utils/verificationEngine.js';
 
 export const DashboardStaff = {
     render(container, state, onUpdate) {
@@ -45,13 +46,21 @@ export const DashboardStaff = {
         const allCases = state.cases;
         const totalToday = allCases.length;
 
-        const verifiedReady = allCases.filter(c => {
+        const getCaseCategory = (c) => {
             const risk = parseInt(c.checks?.risk?.score || c.aiRiskScore0100 || c.aiRiskScore010 || "0");
-            return c.orderStatus === 'GRANTED' || (c.currentStatus === 'Checking' && risk < 40);
-        }).length;
+            const status = c.applicationStatus || 'CHECKING';
+            if (status === 'ALERT' || status === 'DENIED' || risk >= 80) {
+                return 'alert';
+            } else if (status === 'GRANTED' || risk < 40) {
+                return 'verified';
+            } else {
+                return 'checking';
+            }
+        };
 
-        const stillChecking = allCases.filter(c => c.currentStatus === 'Checking').length;
-        const alertsRaised = allCases.filter(c => c.applicationStatus === 'ALERT' || c.currentStatus === 'Checking' && parseInt(c.aiRiskScore0100 || c.aiRiskScore010 || "0") >= 80).length;
+        const verifiedReady = allCases.filter(c => getCaseCategory(c) === 'verified').length;
+        const stillChecking = allCases.filter(c => getCaseCategory(c) === 'checking').length;
+        const alertsRaised = allCases.filter(c => getCaseCategory(c) === 'alert').length;
 
         // Current filter (stored on state so it survives tab switches)
         if (!state.ledgerFilter) state.ledgerFilter = 'all';
@@ -65,12 +74,9 @@ export const DashboardStaff = {
 
         // Helper: get filtered list
         const getFiltered = (filter) => {
-            if (filter === 'verified') return allCases.filter(c => {
-                const risk = parseInt(c.checks?.risk?.score || c.aiRiskScore0100 || c.aiRiskScore010 || "0");
-                return c.orderStatus === 'GRANTED' || (c.currentStatus === 'Checking' && risk < 40);
-            });
-            if (filter === 'checking') return allCases.filter(c => c.currentStatus === 'Checking');
-            if (filter === 'alert') return allCases.filter(c => c.applicationStatus === 'ALERT' || (c.currentStatus === 'Checking' && parseInt(c.aiRiskScore0100 || c.aiRiskScore010 || "0") >= 80));
+            if (filter === 'verified') return allCases.filter(c => getCaseCategory(c) === 'verified');
+            if (filter === 'checking') return allCases.filter(c => getCaseCategory(c) === 'checking');
+            if (filter === 'alert') return allCases.filter(c => getCaseCategory(c) === 'alert');
             return allCases;
         };
 
@@ -227,11 +233,90 @@ export const DashboardStaff = {
         if (!state.formSectionIndex) {
             state.formSectionIndex = 1;
         }
+        if (!state.formValues) {
+            state.formValues = {};
+        }
 
         // Biometric scanning state (in-memory per form-load)
         if (!state.accusedFingerScanned) state.accusedFingerScanned = false;
         if (!state.accusedIrisScanned) state.accusedIrisScanned = false;
         if (!state.suretyFingerScanned) state.suretyFingerScanned = false;
+
+        const saveFormValues = () => {
+            const f = (id) => {
+                const el = mount.querySelector(id);
+                return el ? el.value : '';
+            };
+            const c = (id) => {
+                const el = mount.querySelector(id);
+                return el ? el.checked : false;
+            };
+            
+            const isProp = mount.querySelector('#surety-type-property')?.checked;
+            
+            state.formValues = {
+                caseNo: f('#form-case-no'),
+                firNo: f('#form-fir-no'),
+                ipc: f('#form-ipc'),
+                arrestDate: f('#form-arrest-date'),
+                agency: f('#form-agency'),
+                officer: f('#form-officer'),
+                filingDate: f('#form-filing-date'),
+                
+                checkCharacter: c('#check-character'),
+                checkEmployment: c('#check-employment'),
+                checkCommunity: c('#check-community'),
+                
+                accusedName: f('#form-accused-name'),
+                accusedFather: f('#form-accused-father'),
+                accusedDob: f('#form-accused-dob'),
+                accusedAadhaar: f('#form-accused-aadhaar'),
+                accusedPan: f('#form-accused-pan'),
+                accusedMobile: f('#form-accused-mobile'),
+                accusedDl: f('#form-accused-dl'),
+                accusedPassport: f('#form-accused-passport'),
+                accusedEmployment: f('#form-accused-employment'),
+                accusedIncome: f('#form-accused-income'),
+                accusedBank: f('#form-accused-bank'),
+                accusedCibil: f('#form-accused-cibil'),
+                accusedAddress: f('#form-accused-address'),
+                accusedNcrb: f('#form-accused-ncrb'),
+                
+                suretyType: isProp ? 'Property' : 'Individual',
+                
+                suretyPropAddr: f('#form-surety-prop-addr'),
+                suretySurvey: f('#form-surety-survey'),
+                suretyPatta: f('#form-surety-patta'),
+                suretyValue: f('#form-surety-value'),
+                suretyDeed: f('#form-surety-deed'),
+                suretyEncumbrance: f('#form-surety-encumbrance'),
+                
+                suretyName: f('#form-surety-name'),
+                suretyRel: f('#form-surety-rel'),
+                suretyMobile: f('#form-surety-mobile'),
+                suretyAadhaar: f('#form-surety-aadhaar'),
+                suretyPan: f('#form-surety-pan'),
+                suretyEmployment: f('#form-surety-employment'),
+                suretyIncome: f('#form-surety-income'),
+                
+                judgeName: f('#form-judge-name'),
+                judgeId: f('#form-judge-id'),
+                courtName: f('#form-court-name'),
+                bailAmount: f('#form-bail-amount'),
+                hearingTime: f('#form-hearing-time'),
+                
+                ppObjections: f('#form-pp-objections'),
+                defenceArgs: f('#form-defence-args'),
+                prevOrders: f('#form-prev-orders'),
+                
+                bailType: f('#form-bail-type'),
+                bailStatus: f('#form-bail-status'),
+                condWeekly: c('#cond-weekly'),
+                condPassport: c('#cond-passport'),
+                condWitness: c('#cond-witness'),
+                condGeo: c('#cond-geo')
+            };
+        };
 
         mount.innerHTML = `
             <div class="card" style="background: var(--color-card-dark); border: 1px solid var(--color-border); border-radius: 8px; padding: 25px;">
@@ -257,31 +342,31 @@ export const DashboardStaff = {
                         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; margin-bottom: 20px;">
                             <div class="form-group" style="display: flex; flex-direction: column; gap: 5px;">
                                 <label style="color: var(--color-text-muted); font-size: 13px;">Case Number</label>
-                                <input type="text" id="form-case-no" class="form-input" style="background: var(--color-navy); border: 1px solid var(--color-border); padding: 8px; color: #FFFFFF; border-radius: 4px;" required placeholder="BMS/2026/00XX">
+                                <input type="text" id="form-case-no" class="form-input" style="background: var(--color-navy); border: 1px solid var(--color-border); padding: 8px; color: #FFFFFF; border-radius: 4px;" required placeholder="BMS/2026/00XX" value="${state.formValues.caseNo || ''}">
                             </div>
                             <div class="form-group" style="display: flex; flex-direction: column; gap: 5px;">
                                 <label style="color: var(--color-text-muted); font-size: 13px;">FIR Number</label>
-                                <input type="text" id="form-fir-no" class="form-input" style="background: var(--color-navy); border: 1px solid var(--color-border); padding: 8px; color: #FFFFFF; border-radius: 4px;" required>
+                                <input type="text" id="form-fir-no" class="form-input" style="background: var(--color-navy); border: 1px solid var(--color-border); padding: 8px; color: #FFFFFF; border-radius: 4px;" required value="${state.formValues.firNo || ''}">
                             </div>
                             <div class="form-group" style="display: flex; flex-direction: column; gap: 5px;">
                                 <label style="color: var(--color-text-muted); font-size: 13px;">Charged IPC Sections</label>
-                                <input type="text" id="form-ipc" class="form-input" style="background: var(--color-navy); border: 1px solid var(--color-border); padding: 8px; color: #FFFFFF; border-radius: 4px;" required placeholder="e.g. IPC 420, 468">
+                                <input type="text" id="form-ipc" class="form-input" style="background: var(--color-navy); border: 1px solid var(--color-border); padding: 8px; color: #FFFFFF; border-radius: 4px;" required placeholder="e.g. IPC 420, 468" value="${state.formValues.ipc || ''}">
                             </div>
                             <div class="form-group" style="display: flex; flex-direction: column; gap: 5px;">
                                 <label style="color: var(--color-text-muted); font-size: 13px;">Arrest Date</label>
-                                <input type="date" id="form-arrest-date" class="form-input" style="background: var(--color-navy); border: 1px solid var(--color-border); padding: 8px; color: #FFFFFF; border-radius: 4px;" required>
+                                <input type="date" id="form-arrest-date" class="form-input" style="background: var(--color-navy); border: 1px solid var(--color-border); padding: 8px; color: #FFFFFF; border-radius: 4px;" required value="${state.formValues.arrestDate || ''}">
                             </div>
                             <div class="form-group" style="display: flex; flex-direction: column; gap: 5px;">
                                 <label style="color: var(--color-text-muted); font-size: 13px;">Investigating Agency</label>
-                                <input type="text" id="form-agency" class="form-input" style="background: var(--color-navy); border: 1px solid var(--color-border); padding: 8px; color: #FFFFFF; border-radius: 4px;" required placeholder="e.g. Rajamundry Town PS">
+                                <input type="text" id="form-agency" class="form-input" style="background: var(--color-navy); border: 1px solid var(--color-border); padding: 8px; color: #FFFFFF; border-radius: 4px;" required placeholder="e.g. Rajamundry Town PS" value="${state.formValues.agency || ''}">
                             </div>
                             <div class="form-group" style="display: flex; flex-direction: column; gap: 5px;">
                                 <label style="color: var(--color-text-muted); font-size: 13px;">PS Officer Name</label>
-                                <input type="text" id="form-officer" class="form-input" style="background: var(--color-navy); border: 1px solid var(--color-border); padding: 8px; color: #FFFFFF; border-radius: 4px;" required placeholder="SI Ravi Kumar">
+                                <input type="text" id="form-officer" class="form-input" style="background: var(--color-navy); border: 1px solid var(--color-border); padding: 8px; color: #FFFFFF; border-radius: 4px;" required placeholder="SI Ravi Kumar" value="${state.formValues.officer || ''}">
                             </div>
                             <div class="form-group" style="display: flex; flex-direction: column; gap: 5px;">
                                 <label style="color: var(--color-text-muted); font-size: 13px;">Application Filing Date</label>
-                                <input type="date" id="form-filing-date" class="form-input" style="background: var(--color-navy); border: 1px solid var(--color-border); padding: 8px; color: #FFFFFF; border-radius: 4px;" required>
+                                <input type="date" id="form-filing-date" class="form-input" style="background: var(--color-navy); border: 1px solid var(--color-border); padding: 8px; color: #FFFFFF; border-radius: 4px;" required value="${state.formValues.filingDate || ''}">
                             </div>
                         </div>
 
@@ -291,21 +376,21 @@ export const DashboardStaff = {
                             </div>
                             <div style="display: flex; flex-direction: column; gap: 10px;">
                                 <label style="display: flex; align-items: center; gap: 12px; padding: 10px 14px; background: var(--color-card-dark); border: 1px solid var(--color-border); border-radius: 6px; cursor: pointer; transition: border-color 0.2s;">
-                                    <input type="checkbox" id="check-character" checked style="width: 16px; height: 16px; accent-color: var(--color-gold); cursor: pointer; flex-shrink: 0;">
+                                    <input type="checkbox" id="check-character" ${state.formValues.checkCharacter !== false ? 'checked' : ''} style="width: 16px; height: 16px; accent-color: var(--color-gold); cursor: pointer; flex-shrink: 0;">
                                     <div>
                                         <div style="color: var(--color-text-main); font-size: 13px; font-weight: 600;">Character Certificates</div>
                                         <div style="color: var(--color-text-muted); font-size: 11px; margin-top: 2px;">Issued by local authority / employer</div>
                                     </div>
                                 </label>
                                 <label style="display: flex; align-items: center; gap: 12px; padding: 10px 14px; background: var(--color-card-dark); border: 1px solid var(--color-border); border-radius: 6px; cursor: pointer; transition: border-color 0.2s;">
-                                    <input type="checkbox" id="check-employment" checked style="width: 16px; height: 16px; accent-color: var(--color-gold); cursor: pointer; flex-shrink: 0;">
+                                    <input type="checkbox" id="check-employment" ${state.formValues.checkEmployment !== false ? 'checked' : ''} style="width: 16px; height: 16px; accent-color: var(--color-gold); cursor: pointer; flex-shrink: 0;">
                                     <div>
                                         <div style="color: var(--color-text-main); font-size: 13px; font-weight: 600;">Employment Letters</div>
                                         <div style="color: var(--color-text-muted); font-size: 11px; margin-top: 2px;">Current employment / income proof</div>
                                     </div>
                                 </label>
                                 <label style="display: flex; align-items: center; gap: 12px; padding: 10px 14px; background: var(--color-card-dark); border: 1px solid var(--color-border); border-radius: 6px; cursor: pointer; transition: border-color 0.2s;">
-                                    <input type="checkbox" id="check-community" checked style="width: 16px; height: 16px; accent-color: var(--color-gold); cursor: pointer; flex-shrink: 0;">
+                                    <input type="checkbox" id="check-community" ${state.formValues.checkCommunity !== false ? 'checked' : ''} style="width: 16px; height: 16px; accent-color: var(--color-gold); cursor: pointer; flex-shrink: 0;">
                                     <div>
                                         <div style="color: var(--color-text-main); font-size: 13px; font-weight: 600;">Community Ties Evidence</div>
                                         <div style="color: var(--color-text-muted); font-size: 11px; margin-top: 2px;">Property ownership / family residence proof</div>
@@ -320,62 +405,62 @@ export const DashboardStaff = {
                         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; margin-bottom: 20px;">
                             <div class="form-group" style="display: flex; flex-direction: column; gap: 5px;">
                                 <label style="color: var(--color-text-muted); font-size: 13px;">Accused Full Name</label>
-                                <input type="text" id="form-accused-name" class="form-input" style="background: var(--color-navy); border: 1px solid var(--color-border); padding: 8px; color: #FFFFFF; border-radius: 4px;" required>
+                                <input type="text" id="form-accused-name" class="form-input" style="background: var(--color-navy); border: 1px solid var(--color-border); padding: 8px; color: #FFFFFF; border-radius: 4px;" required value="${state.formValues.accusedName || ''}">
                             </div>
                             <div class="form-group" style="display: flex; flex-direction: column; gap: 5px;">
                                 <label style="color: var(--color-text-muted); font-size: 13px;">Father's Name</label>
-                                <input type="text" id="form-accused-father" class="form-input" style="background: var(--color-navy); border: 1px solid var(--color-border); padding: 8px; color: #FFFFFF; border-radius: 4px;" required>
+                                <input type="text" id="form-accused-father" class="form-input" style="background: var(--color-navy); border: 1px solid var(--color-border); padding: 8px; color: #FFFFFF; border-radius: 4px;" required value="${state.formValues.accusedFather || ''}">
                             </div>
                             <div class="form-group" style="display: flex; flex-direction: column; gap: 5px;">
                                 <label style="color: var(--color-text-muted); font-size: 13px;">DOB</label>
-                                <input type="date" id="form-accused-dob" class="form-input" style="background: var(--color-navy); border: 1px solid var(--color-border); padding: 8px; color: #FFFFFF; border-radius: 4px;" required>
+                                <input type="date" id="form-accused-dob" class="form-input" style="background: var(--color-navy); border: 1px solid var(--color-border); padding: 8px; color: #FFFFFF; border-radius: 4px;" required value="${state.formValues.accusedDob || ''}">
                             </div>
                             <div class="form-group" style="display: flex; flex-direction: column; gap: 5px;">
                                 <label style="color: var(--color-text-muted); font-size: 13px;">Aadhaar Number</label>
-                                <input type="text" id="form-accused-aadhaar" class="form-input" style="background: var(--color-navy); border: 1px solid var(--color-border); padding: 8px; color: #FFFFFF; border-radius: 4px;" required placeholder="XXXX XXXX XXXX">
+                                <input type="text" id="form-accused-aadhaar" class="form-input" style="background: var(--color-navy); border: 1px solid var(--color-border); padding: 8px; color: #FFFFFF; border-radius: 4px;" required placeholder="XXXX XXXX XXXX" value="${state.formValues.accusedAadhaar || ''}">
                             </div>
                             <div class="form-group" style="display: flex; flex-direction: column; gap: 5px;">
                                 <label style="color: var(--color-text-muted); font-size: 13px;">PAN Number</label>
-                                <input type="text" id="form-accused-pan" class="form-input" style="background: var(--color-navy); border: 1px solid var(--color-border); padding: 8px; color: #FFFFFF; border-radius: 4px;" required>
+                                <input type="text" id="form-accused-pan" class="form-input" style="background: var(--color-navy); border: 1px solid var(--color-border); padding: 8px; color: #FFFFFF; border-radius: 4px;" required value="${state.formValues.accusedPan || ''}">
                             </div>
                             <div class="form-group" style="display: flex; flex-direction: column; gap: 5px;">
                                 <label style="color: var(--color-text-muted); font-size: 13px;">Mobile Number</label>
-                                <input type="text" id="form-accused-mobile" class="form-input" style="background: var(--color-navy); border: 1px solid var(--color-border); padding: 8px; color: #FFFFFF; border-radius: 4px;" required>
+                                <input type="text" id="form-accused-mobile" class="form-input" style="background: var(--color-navy); border: 1px solid var(--color-border); padding: 8px; color: #FFFFFF; border-radius: 4px;" required value="${state.formValues.accusedMobile || ''}">
                             </div>
                             <div class="form-group" style="display: flex; flex-direction: column; gap: 5px;">
                                 <label style="color: var(--color-text-muted); font-size: 13px;">Driving License (DL) No.</label>
-                                <input type="text" id="form-accused-dl" class="form-input" style="background: var(--color-navy); border: 1px solid var(--color-border); padding: 8px; color: #FFFFFF; border-radius: 4px;">
+                                <input type="text" id="form-accused-dl" class="form-input" style="background: var(--color-navy); border: 1px solid var(--color-border); padding: 8px; color: #FFFFFF; border-radius: 4px;" value="${state.formValues.accusedDl || ''}">
                             </div>
                             <div class="form-group" style="display: flex; flex-direction: column; gap: 5px;">
                                 <label style="color: var(--color-text-muted); font-size: 13px;">Passport Number</label>
-                                <input type="text" id="form-accused-passport" class="form-input" style="background: var(--color-navy); border: 1px solid var(--color-border); padding: 8px; color: #FFFFFF; border-radius: 4px;">
+                                <input type="text" id="form-accused-passport" class="form-input" style="background: var(--color-navy); border: 1px solid var(--color-border); padding: 8px; color: #FFFFFF; border-radius: 4px;" value="${state.formValues.accusedPassport || ''}">
                             </div>
                             <div class="form-group" style="display: flex; flex-direction: column; gap: 5px;">
                                 <label style="color: var(--color-text-muted); font-size: 13px;">Employment</label>
-                                <input type="text" id="form-accused-employment" class="form-input" style="background: var(--color-navy); border: 1px solid var(--color-border); padding: 8px; color: #FFFFFF; border-radius: 4px;" required>
+                                <input type="text" id="form-accused-employment" class="form-input" style="background: var(--color-navy); border: 1px solid var(--color-border); padding: 8px; color: #FFFFFF; border-radius: 4px;" required value="${state.formValues.accusedEmployment || ''}">
                             </div>
                             <div class="form-group" style="display: flex; flex-direction: column; gap: 5px;">
                                 <label style="color: var(--color-text-muted); font-size: 13px;">Monthly Income (₹)</label>
-                                <input type="number" id="form-accused-income" class="form-input" style="background: var(--color-navy); border: 1px solid var(--color-border); padding: 8px; color: #FFFFFF; border-radius: 4px;" required>
+                                <input type="number" id="form-accused-income" class="form-input" style="background: var(--color-navy); border: 1px solid var(--color-border); padding: 8px; color: #FFFFFF; border-radius: 4px;" required value="${state.formValues.accusedIncome || ''}">
                             </div>
                             <div class="form-group" style="display: flex; flex-direction: column; gap: 5px;">
                                 <label style="color: var(--color-text-muted); font-size: 13px;">Bank Account No.</label>
-                                <input type="text" id="form-accused-bank" class="form-input" style="background: var(--color-navy); border: 1px solid var(--color-border); padding: 8px; color: #FFFFFF; border-radius: 4px;" required>
+                                <input type="text" id="form-accused-bank" class="form-input" style="background: var(--color-navy); border: 1px solid var(--color-border); padding: 8px; color: #FFFFFF; border-radius: 4px;" required value="${state.formValues.accusedBank || ''}">
                             </div>
                             <div class="form-group" style="display: flex; flex-direction: column; gap: 5px;">
                                 <label style="color: var(--color-text-muted); font-size: 13px;">CIBIL Score</label>
-                                <input type="number" id="form-accused-cibil" class="form-input" style="background: var(--color-navy); border: 1px solid var(--color-border); padding: 8px; color: #FFFFFF; border-radius: 4px;" required>
+                                <input type="number" id="form-accused-cibil" class="form-input" style="background: var(--color-navy); border: 1px solid var(--color-border); padding: 8px; color: #FFFFFF; border-radius: 4px;" required value="${state.formValues.accusedCibil || ''}">
                             </div>
                         </div>
 
                         <div class="form-group" style="display: flex; flex-direction: column; gap: 5px; margin-bottom: 20px;">
                             <label style="color: var(--color-text-muted); font-size: 13px;">Residential Address</label>
-                            <input type="text" id="form-accused-address" class="form-input" style="background: var(--color-navy); border: 1px solid var(--color-border); padding: 8px; color: #FFFFFF; border-radius: 4px;" required>
+                            <input type="text" id="form-accused-address" class="form-input" style="background: var(--color-navy); border: 1px solid var(--color-border); padding: 8px; color: #FFFFFF; border-radius: 4px;" required value="${state.formValues.accusedAddress || ''}">
                         </div>
 
                         <div class="form-group" style="display: flex; flex-direction: column; gap: 5px; margin-bottom: 20px;">
                             <label style="color: var(--color-text-muted); font-size: 13px;">Previous Criminal History (NCRB)</label>
-                            <textarea id="form-accused-ncrb" class="form-input" style="background: var(--color-navy); border: 1px solid var(--color-border); padding: 8px; color: #FFFFFF; border-radius: 4px;" rows="2"></textarea>
+                            <textarea id="form-accused-ncrb" class="form-input" style="background: var(--color-navy); border: 1px solid var(--color-border); padding: 8px; color: #FFFFFF; border-radius: 4px;" rows="2">${state.formValues.accusedNcrb || ''}</textarea>
                         </div>
 
                         <!-- Biometric panels -->
@@ -433,14 +518,14 @@ export const DashboardStaff = {
                             <div style="font-size: 12px; font-weight: 700; color: var(--color-gold); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 14px;">🏛️ Surety Backing Type</div>
                             <div style="display: flex; gap: 12px; flex-wrap: wrap;">
                                 <label style="flex: 1; min-width: 180px; display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: var(--color-card-dark); border: 2px solid var(--color-border); border-radius: 8px; cursor: pointer; transition: border-color 0.2s;">
-                                    <input type="radio" name="surety-type" id="surety-type-property" value="Property" checked style="width: 16px; height: 16px; accent-color: var(--color-gold); cursor: pointer; flex-shrink: 0;">
+                                    <input type="radio" name="surety-type" id="surety-type-property" value="Property" ${state.formValues.suretyType !== 'Individual' ? 'checked' : ''} style="width: 16px; height: 16px; accent-color: var(--color-gold); cursor: pointer; flex-shrink: 0;">
                                     <div>
                                         <div style="color: var(--color-text-main); font-size: 13px; font-weight: 700;">🏠 Property Backed</div>
                                         <div style="color: var(--color-text-muted); font-size: 11px; margin-top: 2px;">Land / immovable asset as collateral</div>
                                     </div>
                                 </label>
                                 <label style="flex: 1; min-width: 180px; display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: var(--color-card-dark); border: 2px solid var(--color-border); border-radius: 8px; cursor: pointer; transition: border-color 0.2s;">
-                                    <input type="radio" name="surety-type" id="surety-type-individual" value="Individual" style="width: 16px; height: 16px; accent-color: var(--color-gold); cursor: pointer; flex-shrink: 0;">
+                                    <input type="radio" name="surety-type" id="surety-type-individual" value="Individual" ${state.formValues.suretyType === 'Individual' ? 'checked' : ''} style="width: 16px; height: 16px; accent-color: var(--color-gold); cursor: pointer; flex-shrink: 0;">
                                     <div>
                                         <div style="color: var(--color-text-main); font-size: 13px; font-weight: 700;">👤 Individual Guarantor</div>
                                         <div style="color: var(--color-text-muted); font-size: 11px; margin-top: 2px;">Solvent person guaranteeing appearance</div>
@@ -450,69 +535,69 @@ export const DashboardStaff = {
                         </div>
 
                         <!-- Property Fields -->
-                        <div id="surety-property-fields">
+                        <div id="surety-property-fields" style="display: ${state.formValues.suretyType !== 'Individual' ? 'block' : 'none'};">
                             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; margin-bottom: 20px;">
                                 <div class="form-group" style="display: flex; flex-direction: column; gap: 5px;">
                                     <label style="color: var(--color-text-muted); font-size: 13px;">Property Address</label>
-                                    <input type="text" id="form-surety-prop-addr" class="form-input" style="background: var(--color-navy); border: 1px solid var(--color-border); padding: 8px; color: #FFFFFF; border-radius: 4px;">
+                                    <input type="text" id="form-surety-prop-addr" class="form-input" style="background: var(--color-navy); border: 1px solid var(--color-border); padding: 8px; color: #FFFFFF; border-radius: 4px;" value="${state.formValues.suretyPropAddr || ''}">
                                 </div>
                                 <div class="form-group" style="display: flex; flex-direction: column; gap: 5px;">
                                     <label style="color: var(--color-text-muted); font-size: 13px;">Survey Number</label>
-                                    <input type="text" id="form-surety-survey" class="form-input" style="background: var(--color-navy); border: 1px solid var(--color-border); padding: 8px; color: #FFFFFF; border-radius: 4px;">
+                                    <input type="text" id="form-surety-survey" class="form-input" style="background: var(--color-navy); border: 1px solid var(--color-border); padding: 8px; color: #FFFFFF; border-radius: 4px;" value="${state.formValues.suretySurvey || ''}">
                                 </div>
                                 <div class="form-group" style="display: flex; flex-direction: column; gap: 5px;">
                                     <label style="color: var(--color-text-muted); font-size: 13px;">Patta Number</label>
-                                    <input type="text" id="form-surety-patta" class="form-input" style="background: var(--color-navy); border: 1px solid var(--color-border); padding: 8px; color: #FFFFFF; border-radius: 4px;">
+                                    <input type="text" id="form-surety-patta" class="form-input" style="background: var(--color-navy); border: 1px solid var(--color-border); padding: 8px; color: #FFFFFF; border-radius: 4px;" value="${state.formValues.suretyPatta || ''}">
                                 </div>
                                 <div class="form-group" style="display: flex; flex-direction: column; gap: 5px;">
                                     <label style="color: var(--color-text-muted); font-size: 13px;">Market Value (₹)</label>
-                                    <input type="number" id="form-surety-value" class="form-input" style="background: var(--color-navy); border: 1px solid var(--color-border); padding: 8px; color: #FFFFFF; border-radius: 4px;">
+                                    <input type="number" id="form-surety-value" class="form-input" style="background: var(--color-navy); border: 1px solid var(--color-border); padding: 8px; color: #FFFFFF; border-radius: 4px;" value="${state.formValues.suretyValue || ''}">
                                 </div>
                                 <div class="form-group" style="display: flex; flex-direction: column; gap: 5px;">
                                     <label style="color: var(--color-text-muted); font-size: 13px;">Title Deed ID</label>
-                                    <input type="text" id="form-surety-deed" class="form-input" style="background: var(--color-navy); border: 1px solid var(--color-border); padding: 8px; color: #FFFFFF; border-radius: 4px;">
+                                    <input type="text" id="form-surety-deed" class="form-input" style="background: var(--color-navy); border: 1px solid var(--color-border); padding: 8px; color: #FFFFFF; border-radius: 4px;" value="${state.formValues.suretyDeed || ''}">
                                 </div>
                                 <div class="form-group" style="display: flex; flex-direction: column; gap: 5px;">
                                     <label style="color: var(--color-text-muted); font-size: 13px;">Encumbrance Status</label>
                                     <select id="form-surety-encumbrance" class="form-input" style="background: var(--color-navy); border: 1px solid var(--color-border); padding: 8px; color: #FFFFFF; border-radius: 4px;">
-                                        <option value="CLEAN">Clean / Unencumbered</option>
-                                        <option value="AWAITING MUTATION">Awaiting Mutation</option>
-                                        <option value="ENCUMBERED">Encumbered / Pledged</option>
+                                        <option value="CLEAN" ${state.formValues.suretyEncumbrance === 'CLEAN' ? 'selected' : ''}>Clean / Unencumbered</option>
+                                        <option value="AWAITING MUTATION" ${state.formValues.suretyEncumbrance === 'AWAITING MUTATION' ? 'selected' : ''}>Awaiting Mutation</option>
+                                        <option value="ENCUMBERED" ${state.formValues.suretyEncumbrance === 'ENCUMBERED' ? 'selected' : ''}>Encumbered / Pledged</option>
                                     </select>
                                 </div>
                             </div>
                         </div>
 
                         <!-- Individual Fields -->
-                        <div id="surety-individual-fields" style="display: none;">
+                        <div id="surety-individual-fields" style="display: ${state.formValues.suretyType === 'Individual' ? 'block' : 'none'};">
                             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; margin-bottom: 20px;">
                                 <div class="form-group" style="display: flex; flex-direction: column; gap: 5px;">
                                     <label style="color: var(--color-text-muted); font-size: 13px;">Surety Name</label>
-                                    <input type="text" id="form-surety-name" class="form-input" style="background: var(--color-navy); border: 1px solid var(--color-border); padding: 8px; color: #FFFFFF; border-radius: 4px;">
+                                    <input type="text" id="form-surety-name" class="form-input" style="background: var(--color-navy); border: 1px solid var(--color-border); padding: 8px; color: #FFFFFF; border-radius: 4px;" value="${state.formValues.suretyName || ''}">
                                 </div>
                                 <div class="form-group" style="display: flex; flex-direction: column; gap: 5px;">
                                     <label style="color: var(--color-text-muted); font-size: 13px;">Relationship to Accused</label>
-                                    <input type="text" id="form-surety-rel" class="form-input" style="background: var(--color-navy); border: 1px solid var(--color-border); padding: 8px; color: #FFFFFF; border-radius: 4px;">
+                                    <input type="text" id="form-surety-rel" class="form-input" style="background: var(--color-navy); border: 1px solid var(--color-border); padding: 8px; color: #FFFFFF; border-radius: 4px;" value="${state.formValues.suretyRel || ''}">
                                 </div>
                                 <div class="form-group" style="display: flex; flex-direction: column; gap: 5px;">
                                     <label style="color: var(--color-text-muted); font-size: 13px;">Mobile Number</label>
-                                    <input type="text" id="form-surety-mobile" class="form-input" style="background: var(--color-navy); border: 1px solid var(--color-border); padding: 8px; color: #FFFFFF; border-radius: 4px;">
+                                    <input type="text" id="form-surety-mobile" class="form-input" style="background: var(--color-navy); border: 1px solid var(--color-border); padding: 8px; color: #FFFFFF; border-radius: 4px;" value="${state.formValues.suretyMobile || ''}">
                                 </div>
                                 <div class="form-group" style="display: flex; flex-direction: column; gap: 5px;">
                                     <label style="color: var(--color-text-muted); font-size: 13px;">Aadhaar Number</label>
-                                    <input type="text" id="form-surety-aadhaar" class="form-input" style="background: var(--color-navy); border: 1px solid var(--color-border); padding: 8px; color: #FFFFFF; border-radius: 4px;">
+                                    <input type="text" id="form-surety-aadhaar" class="form-input" style="background: var(--color-navy); border: 1px solid var(--color-border); padding: 8px; color: #FFFFFF; border-radius: 4px;" value="${state.formValues.suretyAadhaar || ''}">
                                 </div>
                                 <div class="form-group" style="display: flex; flex-direction: column; gap: 5px;">
                                     <label style="color: var(--color-text-muted); font-size: 13px;">PAN Number</label>
-                                    <input type="text" id="form-surety-pan" class="form-input" style="background: var(--color-navy); border: 1px solid var(--color-border); padding: 8px; color: #FFFFFF; border-radius: 4px;">
+                                    <input type="text" id="form-surety-pan" class="form-input" style="background: var(--color-navy); border: 1px solid var(--color-border); padding: 8px; color: #FFFFFF; border-radius: 4px;" value="${state.formValues.suretyPan || ''}">
                                 </div>
                                 <div class="form-group" style="display: flex; flex-direction: column; gap: 5px;">
                                     <label style="color: var(--color-text-muted); font-size: 13px;">Employment</label>
-                                    <input type="text" id="form-surety-employment" class="form-input" style="background: var(--color-navy); border: 1px solid var(--color-border); padding: 8px; color: #FFFFFF; border-radius: 4px;">
+                                    <input type="text" id="form-surety-employment" class="form-input" style="background: var(--color-navy); border: 1px solid var(--color-border); padding: 8px; color: #FFFFFF; border-radius: 4px;" value="${state.formValues.suretyEmployment || ''}">
                                 </div>
                                 <div class="form-group" style="display: flex; flex-direction: column; gap: 5px;">
                                     <label style="color: var(--color-text-muted); font-size: 13px;">Monthly Income (₹)</label>
-                                    <input type="number" id="form-surety-income" class="form-input" style="background: var(--color-navy); border: 1px solid var(--color-border); padding: 8px; color: #FFFFFF; border-radius: 4px;">
+                                    <input type="number" id="form-surety-income" class="form-input" style="background: var(--color-navy); border: 1px solid var(--color-border); padding: 8px; color: #FFFFFF; border-radius: 4px;" value="${state.formValues.suretyIncome || ''}">
                                 </div>
                             </div>
                         </div>
@@ -548,38 +633,38 @@ export const DashboardStaff = {
                         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; margin-bottom: 20px;">
                             <div class="form-group" style="display: flex; flex-direction: column; gap: 5px;">
                                 <label style="color: var(--color-text-muted); font-size: 13px;">Judge Name</label>
-                                <input type="text" id="form-judge-name" class="form-input" style="background: var(--color-navy); border: 1px solid var(--color-border); padding: 8px; color: #FFFFFF; border-radius: 4px;" required placeholder="J. Kameswara Rao">
+                                <input type="text" id="form-judge-name" class="form-input" style="background: var(--color-navy); border: 1px solid var(--color-border); padding: 8px; color: #FFFFFF; border-radius: 4px;" required placeholder="J. Kameswara Rao" value="${state.formValues.judgeName || ''}">
                             </div>
                             <div class="form-group" style="display: flex; flex-direction: column; gap: 5px;">
                                 <label style="color: var(--color-text-muted); font-size: 13px;">Judge ID</label>
-                                <input type="text" id="form-judge-id" class="form-input" style="background: var(--color-navy); border: 1px solid var(--color-border); padding: 8px; color: #FFFFFF; border-radius: 4px;" required placeholder="JUDGE-KAMESWARA">
+                                <input type="text" id="form-judge-id" class="form-input" style="background: var(--color-navy); border: 1px solid var(--color-border); padding: 8px; color: #FFFFFF; border-radius: 4px;" required placeholder="JUDGE-KAMESWARA" value="${state.formValues.judgeId || ''}">
                             </div>
                             <div class="form-group" style="display: flex; flex-direction: column; gap: 5px;">
                                 <label style="color: var(--color-text-muted); font-size: 13px;">Court Name</label>
-                                <input type="text" id="form-court-name" class="form-input" style="background: var(--color-navy); border: 1px solid var(--color-border); padding: 8px; color: #FFFFFF; border-radius: 4px;" required placeholder="Sessions Court Room 2">
+                                <input type="text" id="form-court-name" class="form-input" style="background: var(--color-navy); border: 1px solid var(--color-border); padding: 8px; color: #FFFFFF; border-radius: 4px;" required placeholder="Sessions Court Room 2" value="${state.formValues.courtName || ''}">
                             </div>
                             <div class="form-group" style="display: flex; flex-direction: column; gap: 5px;">
                                 <label style="color: var(--color-text-muted); font-size: 13px;">Bail Type</label>
                                 <select id="form-bail-type" class="form-input" style="background: var(--color-navy); border: 1px solid var(--color-border); padding: 8px; color: #FFFFFF; border-radius: 4px;">
-                                    <option value="First Bail">First Bail</option>
-                                    <option value="Anticipatory">Anticipatory</option>
-                                    <option value="Second Bail">Second Bail</option>
+                                    <option value="First Bail" ${state.formValues.bailType === 'First Bail' ? 'selected' : ''}>First Bail</option>
+                                    <option value="Anticipatory" ${state.formValues.bailType === 'Anticipatory' ? 'selected' : ''}>Anticipatory</option>
+                                    <option value="Second Bail" ${state.formValues.bailType === 'Second Bail' ? 'selected' : ''}>Second Bail</option>
                                 </select>
                             </div>
                             <div class="form-group" style="display: flex; flex-direction: column; gap: 5px;">
                                 <label style="color: var(--color-text-muted); font-size: 13px;">Proposed Bail Amount (₹)</label>
-                                <input type="number" id="form-bail-amount" class="form-input" style="background: var(--color-navy); border: 1px solid var(--color-border); padding: 8px; color: #FFFFFF; border-radius: 4px;" required>
+                                <input type="number" id="form-bail-amount" class="form-input" style="background: var(--color-navy); border: 1px solid var(--color-border); padding: 8px; color: #FFFFFF; border-radius: 4px;" required value="${state.formValues.bailAmount || ''}">
                             </div>
                             <div class="form-group" style="display: flex; flex-direction: column; gap: 5px;">
                                 <label style="color: var(--color-text-muted); font-size: 13px;">Hearing Date & Time</label>
-                                <input type="datetime-local" id="form-hearing-time" class="form-input" style="background: var(--color-navy); border: 1px solid var(--color-border); padding: 8px; color: #FFFFFF; border-radius: 4px;" required>
+                                <input type="datetime-local" id="form-hearing-time" class="form-input" style="background: var(--color-navy); border: 1px solid var(--color-border); padding: 8px; color: #FFFFFF; border-radius: 4px;" required value="${state.formValues.hearingTime || ''}">
                             </div>
                             <div class="form-group" style="display: flex; flex-direction: column; gap: 5px;">
                                 <label style="color: var(--color-text-muted); font-size: 13px;">Bail Case Status</label>
                                 <select id="form-bail-status" class="form-input" style="background: var(--color-navy); border: 1px solid var(--color-border); padding: 8px; color: #FFFFFF; border-radius: 4px;">
-                                    <option value="CHECKING">CHECKING (Under verification)</option>
-                                    <option value="PENDING">PENDING (Awaiting hearing)</option>
-                                    <option value="ALERT">ALERT (Suspicious matches)</option>
+                                    <option value="CHECKING" ${state.formValues.bailStatus === 'CHECKING' ? 'selected' : ''}>CHECKING (Under verification)</option>
+                                    <option value="PENDING" ${state.formValues.bailStatus === 'PENDING' ? 'selected' : ''}>PENDING (Awaiting hearing)</option>
+                                    <option value="ALERT" ${state.formValues.bailStatus === 'ALERT' ? 'selected' : ''}>ALERT (Suspicious matches)</option>
                                 </select>
                             </div>
                         </div>
@@ -591,28 +676,28 @@ export const DashboardStaff = {
                             </div>
                             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px;">
                                 <label style="display: flex; align-items: center; gap: 12px; padding: 10px 14px; background: var(--color-card-dark); border: 1px solid var(--color-border); border-radius: 6px; cursor: pointer;">
-                                    <input type="checkbox" id="cond-weekly" checked style="width: 16px; height: 16px; accent-color: var(--color-gold); cursor: pointer; flex-shrink: 0;">
+                                    <input type="checkbox" id="cond-weekly" ${state.formValues.condWeekly !== false ? 'checked' : ''} style="width: 16px; height: 16px; accent-color: var(--color-gold); cursor: pointer; flex-shrink: 0;">
                                     <div>
                                         <div style="color: var(--color-text-main); font-size: 13px; font-weight: 600;">Weekly Reporting to PS</div>
                                         <div style="color: var(--color-text-muted); font-size: 11px; margin-top: 2px;">Report to local Police Station weekly</div>
                                     </div>
                                 </label>
                                 <label style="display: flex; align-items: center; gap: 12px; padding: 10px 14px; background: var(--color-card-dark); border: 1px solid var(--color-border); border-radius: 6px; cursor: pointer;">
-                                    <input type="checkbox" id="cond-passport" checked style="width: 16px; height: 16px; accent-color: var(--color-gold); cursor: pointer; flex-shrink: 0;">
+                                    <input type="checkbox" id="cond-passport" ${state.formValues.condPassport !== false ? 'checked' : ''} style="width: 16px; height: 16px; accent-color: var(--color-gold); cursor: pointer; flex-shrink: 0;">
                                     <div>
                                         <div style="color: var(--color-text-main); font-size: 13px; font-weight: 600;">Passport Surrender</div>
                                         <div style="color: var(--color-text-muted); font-size: 11px; margin-top: 2px;">Surrender to court registry</div>
                                     </div>
                                 </label>
                                 <label style="display: flex; align-items: center; gap: 12px; padding: 10px 14px; background: var(--color-card-dark); border: 1px solid var(--color-border); border-radius: 6px; cursor: pointer;">
-                                    <input type="checkbox" id="cond-witness" checked style="width: 16px; height: 16px; accent-color: var(--color-gold); cursor: pointer; flex-shrink: 0;">
+                                    <input type="checkbox" id="cond-witness" ${state.formValues.condWitness !== false ? 'checked' : ''} style="width: 16px; height: 16px; accent-color: var(--color-gold); cursor: pointer; flex-shrink: 0;">
                                     <div>
                                         <div style="color: var(--color-text-main); font-size: 13px; font-weight: 600;">No Contact with Witnesses</div>
                                         <div style="color: var(--color-text-muted); font-size: 11px; margin-top: 2px;">No tampering / communication</div>
                                     </div>
                                 </label>
                                 <label style="display: flex; align-items: center; gap: 12px; padding: 10px 14px; background: var(--color-card-dark); border: 1px solid var(--color-border); border-radius: 6px; cursor: pointer;">
-                                    <input type="checkbox" id="cond-geo" style="width: 16px; height: 16px; accent-color: var(--color-gold); cursor: pointer; flex-shrink: 0;">
+                                    <input type="checkbox" id="cond-geo" ${state.formValues.condGeo === true ? 'checked' : ''} style="width: 16px; height: 16px; accent-color: var(--color-gold); cursor: pointer; flex-shrink: 0;">
                                     <div>
                                         <div style="color: var(--color-text-main); font-size: 13px; font-weight: 600;">Geofencing Restrictions</div>
                                         <div style="color: var(--color-text-muted); font-size: 11px; margin-top: 2px;">GPS ankle monitor / zone boundary</div>
@@ -625,15 +710,15 @@ export const DashboardStaff = {
                         <div style="display: flex; flex-direction: column; gap: 15px; margin-bottom: 25px;">
                             <div class="form-group" style="display: flex; flex-direction: column; gap: 5px;">
                                 <label style="color: var(--color-text-muted); font-size: 13px;">Public Prosecutor (PP) Objections</label>
-                                <textarea id="form-pp-objections" class="form-input" style="background: var(--color-navy); border: 1px solid var(--color-border); padding: 8px; color: #FFFFFF; border-radius: 4px;" rows="2">Flight risk possible due to substantial assets.</textarea>
+                                <textarea id="form-pp-objections" class="form-input" style="background: var(--color-navy); border: 1px solid var(--color-border); padding: 8px; color: #FFFFFF; border-radius: 4px;" rows="2">${state.formValues.ppObjections !== undefined ? state.formValues.ppObjections : 'Flight risk possible due to substantial assets.'}</textarea>
                             </div>
                             <div class="form-group" style="display: flex; flex-direction: column; gap: 5px;">
                                 <label style="color: var(--color-text-muted); font-size: 13px;">Defence Counsel Arguments</label>
-                                <textarea id="form-defence-args" class="form-input" style="background: var(--color-navy); border: 1px solid var(--color-border); padding: 8px; color: #FFFFFF; border-radius: 4px;" rows="2">Accused is cooperative; items recovered; family dependent.</textarea>
+                                <textarea id="form-defence-args" class="form-input" style="background: var(--color-navy); border: 1px solid var(--color-border); padding: 8px; color: #FFFFFF; border-radius: 4px;" rows="2">${state.formValues.defenceArgs !== undefined ? state.formValues.defenceArgs : 'Accused is cooperative; items recovered; family dependent.'}</textarea>
                             </div>
                             <div class="form-group" style="display: flex; flex-direction: column; gap: 5px;">
                                 <label style="color: var(--color-text-muted); font-size: 13px;">Previous Court Orders</label>
-                                <textarea id="form-prev-orders" class="form-input" style="background: var(--color-navy); border: 1px solid var(--color-border); padding: 8px; color: #FFFFFF; border-radius: 4px;" rows="2">None.</textarea>
+                                <textarea id="form-prev-orders" class="form-input" style="background: var(--color-navy); border: 1px solid var(--color-border); padding: 8px; color: #FFFFFF; border-radius: 4px;" rows="2">${state.formValues.prevOrders !== undefined ? state.formValues.prevOrders : 'None.'}</textarea>
                             </div>
                         </div>
                     </div>
@@ -670,6 +755,7 @@ export const DashboardStaff = {
         for (let i = 1; i <= 4; i++) {
             mount.querySelector(`#form-sec-tab-${i}`).addEventListener('click', (e) => {
                 e.preventDefault();
+                saveFormValues();
                 state.formSectionIndex = i;
                 onUpdate();
             });
@@ -678,6 +764,7 @@ export const DashboardStaff = {
         // Section Navigation
         if (mount.querySelector('#btn-prev-section')) {
             mount.querySelector('#btn-prev-section').addEventListener('click', () => {
+                saveFormValues();
                 state.formSectionIndex -= 1;
                 onUpdate();
             });
@@ -685,6 +772,7 @@ export const DashboardStaff = {
 
         if (mount.querySelector('#btn-next-section')) {
             mount.querySelector('#btn-next-section').addEventListener('click', () => {
+                saveFormValues();
                 state.formSectionIndex += 1;
                 onUpdate();
             });
@@ -692,6 +780,7 @@ export const DashboardStaff = {
 
         // Biometric scanning simulation with animations
         mount.querySelector('#btn-scan-accused-finger').addEventListener('click', () => {
+            saveFormValues();
             state.accusedFingerScanning = true;
             onUpdate();
             setTimeout(() => {
@@ -702,6 +791,7 @@ export const DashboardStaff = {
             }, 1800);
         });
         mount.querySelector('#btn-scan-accused-iris').addEventListener('click', () => {
+            saveFormValues();
             state.accusedIrisScanning = true;
             onUpdate();
             setTimeout(() => {
@@ -712,6 +802,7 @@ export const DashboardStaff = {
             }, 1800);
         });
         mount.querySelector('#btn-scan-surety-finger').addEventListener('click', () => {
+            saveFormValues();
             state.suretyFingerScanning = true;
             onUpdate();
             setTimeout(() => {
@@ -724,6 +815,7 @@ export const DashboardStaff = {
 
         // Reset button
         mount.querySelector('#btn-form-reset').addEventListener('click', () => {
+            state.formValues = {};
             state.accusedFingerScanned = false;
             state.accusedIrisScanned = false;
             state.suretyFingerScanned = false;
@@ -733,51 +825,77 @@ export const DashboardStaff = {
 
         // Autofill demo data
         mount.querySelector('#btn-demo-autofill').addEventListener('click', () => {
-            // Fill inputs with demo accused and default data
             const rand = Math.floor(Math.random() * 900) + 100;
+            const cNo = `BMS/2026/0${rand}`;
+            const fNo = `FIR/${rand}/2026-RJM`;
+
+            state.formValues = {
+                caseNo: cNo,
+                firNo: fNo,
+                ipc: "IPC 420, 468",
+                arrestDate: "2026-05-15",
+                agency: "Rajamundry Central PS",
+                officer: "SI Ravi Kumar",
+                filingDate: "2026-06-17",
+
+                checkCharacter: true,
+                checkEmployment: true,
+                checkCommunity: true,
+
+                accusedName: "Srinivas Rao Vemuri",
+                accusedFather: "Satyanarayana Vemuri",
+                accusedDob: "1985-06-15",
+                accusedAadhaar: "567823419012",
+                accusedPan: "ABCPV1234D",
+                accusedMobile: "9849001122",
+                accusedDl: "AP09-2011-1234567",
+                accusedPassport: "NIL",
+                accusedEmployment: "Textile Trader",
+                accusedIncome: "45000",
+                accusedBank: "SB/4421/ANDBANK",
+                accusedCibil: "687",
+                accusedAddress: "W/8 Subhash Road, Rajamundry",
+                accusedNcrb: "0 previous NCRB cases.",
+
+                suretyType: "Property",
+                suretyPropAddr: "W/8 Subhash Road, Rajamundry",
+                suretySurvey: "RS-104/12-C",
+                suretyPatta: "P-8472-RJM",
+                suretyValue: "650000",
+                suretyDeed: "TD-2026-RJM-482",
+                suretyEncumbrance: "CLEAN",
+
+                suretyName: "Srinivas Rao Vemuri",
+                suretyRel: "Self",
+                suretyMobile: "9849001122",
+                suretyAadhaar: "567823419012",
+                suretyPan: "ABCPV1234D",
+                suretyEmployment: "Textile Trader",
+                suretyIncome: "45000",
+
+                judgeName: "J. Kameswara Rao",
+                judgeId: "JUDGE-KAMESWARA",
+                courtName: "Sessions Court Room 2",
+                bailAmount: "50000",
+                hearingTime: "2026-06-20T10:30",
+
+                bailType: "First Bail",
+                bailStatus: "CHECKING",
+                condWeekly: true,
+                condPassport: true,
+                condWitness: true,
+                condGeo: false,
+
+                ppObjections: "Flight risk possible due to substantial assets.",
+                defenceArgs: "Accused is cooperative; items recovered; family dependent.",
+                prevOrders: "None."
+            };
+
             state.accusedFingerScanned = true;
             state.accusedIrisScanned = true;
             state.suretyFingerScanned = true;
+
             onUpdate();
-
-            const cNo = `BMS/2026/0${rand}`;
-            const fNo = `FIR/${rand}/2026-RJM`;
-            
-            mount.querySelector('#form-case-no').value = cNo;
-            mount.querySelector('#form-fir-no').value = fNo;
-            mount.querySelector('#form-ipc').value = "IPC 420, 468";
-            mount.querySelector('#form-arrest-date').value = "2026-05-15";
-            mount.querySelector('#form-agency').value = "Rajamundry Central PS";
-            mount.querySelector('#form-officer').value = "SI Ravi Kumar";
-            mount.querySelector('#form-filing-date').value = "2026-06-17";
-
-            mount.querySelector('#form-accused-name').value = "Srinivas Rao Vemuri";
-            mount.querySelector('#form-accused-father').value = "Satyanarayana Vemuri";
-            mount.querySelector('#form-accused-dob').value = "1985-06-15";
-            mount.querySelector('#form-accused-aadhaar').value = "567823419012";
-            mount.querySelector('#form-accused-pan').value = "ABCPV1234D";
-            mount.querySelector('#form-accused-mobile').value = "9849001122";
-            mount.querySelector('#form-accused-dl').value = "AP09-2011-1234567";
-            mount.querySelector('#form-accused-passport').value = "NIL";
-            mount.querySelector('#form-accused-employment').value = "Textile Trader";
-            mount.querySelector('#form-accused-income').value = "45000";
-            mount.querySelector('#form-accused-bank').value = "SB/4421/ANDBANK";
-            mount.querySelector('#form-accused-cibil').value = "687";
-            mount.querySelector('#form-accused-address').value = "W/8 Subhash Road, Rajamundry";
-            mount.querySelector('#form-accused-ncrb').value = "0 previous NCRB cases.";
-
-            mount.querySelector('#form-surety-prop-addr').value = "W/8 Subhash Road, Rajamundry";
-            mount.querySelector('#form-surety-survey').value = "RS-104/12-C";
-            mount.querySelector('#form-surety-patta').value = "P-8472-RJM";
-            mount.querySelector('#form-surety-value').value = "650000";
-            mount.querySelector('#form-surety-deed').value = "TD-2026-RJM-482";
-            mount.querySelector('#form-surety-encumbrance').value = "CLEAN";
-
-            mount.querySelector('#form-judge-name').value = "J. Kameswara Rao";
-            mount.querySelector('#form-judge-id').value = "JUDGE-KAMESWARA";
-            mount.querySelector('#form-court-name').value = "Sessions Court Room 2";
-            mount.querySelector('#form-bail-amount').value = "50000";
-            mount.querySelector('#form-hearing-time').value = "2026-06-20T10:30";
         });
 
         // Submit form
@@ -791,8 +909,13 @@ export const DashboardStaff = {
                 return;
             }
 
-            const cNo = mount.querySelector('#form-case-no').value;
-            const isProp = mount.querySelector('#surety-type-property').checked;
+            // Save final form values
+            saveFormValues();
+
+            const cNo = state.formValues.caseNo;
+            const isProp = state.formValues.suretyType === 'Property';
+            const ncrbCountVal = parseInt(state.formValues.accusedCibil) < 600 ? 2 : 0;
+            const proposedBailAmount = parseInt(state.formValues.bailAmount) || 50000;
 
             // Render dummy API integration loader modal
             const loaderOverlay = document.createElement('div');
@@ -833,7 +956,6 @@ export const DashboardStaff = {
 
             // Step 3: NCRB
             await new Promise(r => setTimeout(r, 550));
-            const ncrbCountVal = parseInt(mount.querySelector('#form-accused-cibil').value) < 600 ? 2 : 0;
             loaderOverlay.querySelector('#step-3').innerHTML = `✓ [3/5] NCRB: Query Complete (${ncrbCountVal} active FIRs found)`;
             loaderOverlay.querySelector('#step-3').style.color = 'var(--color-success)';
 
@@ -850,54 +972,107 @@ export const DashboardStaff = {
             await new Promise(r => setTimeout(r, 400));
             loaderOverlay.remove();
 
+            // Run verification engine checks
+            const identityCheck = VerificationEngine.verifyIdentity(
+                state.formValues.accusedAadhaar,
+                state.accusedFingerScanned,
+                state.accusedIrisScanned
+            );
+
+            const accusedIncome = parseInt(state.formValues.accusedIncome) || 0;
+            const accusedCibil = parseInt(state.formValues.accusedCibil) || 600;
+            const suretyIncome = isProp ? accusedIncome : (parseInt(state.formValues.suretyIncome) || 0);
+            const pan = isProp ? state.formValues.accusedPan : state.formValues.suretyPan;
+            
+            const financeCheck = VerificationEngine.verifyFinancialCapacity(
+                pan,
+                [suretyIncome * 12],
+                25000,
+                accusedCibil,
+                proposedBailAmount
+            );
+
+            const riskCheck = VerificationEngine.calculateRiskScore(
+                ncrbCountVal,
+                0, // prevBailsGranted
+                0, // prevBailsHonored
+                0, // abscondingCount
+                false // travelRestricted
+            );
+
+            const suretyLoadCheck = VerificationEngine.verifySuretyLoad(
+                0, // activeBailCount
+                0  // pastDefaults
+            );
+
+            const encumbrance = isProp ? state.formValues.suretyEncumbrance : 'CLEAN';
+            const propertyVal = isProp ? (parseInt(state.formValues.suretyValue) || 0) : 0;
+            const ownerName = isProp ? state.formValues.accusedName : state.formValues.suretyName;
+            const propertyCheck = VerificationEngine.verifyProperty(
+                isProp,
+                ownerName,
+                ownerName,
+                encumbrance !== 'CLEAN',
+                propertyVal,
+                proposedBailAmount
+            );
+
+            const recommendationCheck = VerificationEngine.compileRecommendation(
+                identityCheck,
+                financeCheck,
+                riskCheck,
+                suretyLoadCheck,
+                propertyCheck
+            );
+
             // Gather data and insert into AppState.cases
             const newCase = {
                 caseNumber: cNo,
-                firNumber: mount.querySelector('#form-fir-no').value,
-                ipcSections: mount.querySelector('#form-ipc').value,
-                dateOfArrest: mount.querySelector('#form-arrest-date').value,
-                policeStation: `${mount.querySelector('#form-agency').value} (${mount.querySelector('#form-officer').value})`,
-                presidingJudge: `Hon'ble ${mount.querySelector('#form-judge-name').value}`,
-                judgeId: mount.querySelector('#form-judge-id').value,
-                courtLocation: mount.querySelector('#form-court-name').value + ", East Godavari",
+                firNumber: state.formValues.firNo,
+                ipcSections: state.formValues.ipc,
+                dateOfArrest: state.formValues.arrestDate,
+                policeStation: `${state.formValues.agency} (${state.formValues.officer})`,
+                presidingJudge: `Hon'ble ${state.formValues.judgeName}`,
+                judgeId: state.formValues.judgeId,
+                courtLocation: state.formValues.courtName + ", East Godavari",
                 caseStatus: "Checking",
-                previousCourtOrders: mount.querySelector('#form-prev-orders').value,
-                filingDate: mount.querySelector('#form-filing-date').value,
+                previousCourtOrders: state.formValues.prevOrders,
+                filingDate: state.formValues.filingDate,
                 supportingDocs: [
-                    mount.querySelector('#check-character').checked ? 'Character Certificate' : '',
-                    mount.querySelector('#check-employment').checked ? 'Employment Letter' : '',
-                    mount.querySelector('#check-community').checked ? 'Community Ties Evidence' : ''
+                    state.formValues.checkCharacter ? 'Character Certificate' : '',
+                    state.formValues.checkEmployment ? 'Employment Letter' : '',
+                    state.formValues.checkCommunity ? 'Community Ties Evidence' : ''
                 ].filter(Boolean),
-                bailType: mount.querySelector('#form-bail-type').value,
-                proposedBailAmount: parseInt(mount.querySelector('#form-bail-amount').value) || 50000,
+                bailType: state.formValues.bailType,
+                proposedBailAmount: proposedBailAmount,
                 proposedConditions: [
-                    mount.querySelector('#cond-weekly').checked ? 'Weekly Reporting' : '',
-                    mount.querySelector('#cond-passport').checked ? 'Passport Deposit' : '',
-                    mount.querySelector('#cond-witness').checked ? 'No Contact with Witnesses' : '',
-                    mount.querySelector('#cond-geo').checked ? 'Geofencing Restrictions' : ''
+                    state.formValues.condWeekly ? 'Weekly Reporting' : '',
+                    state.formValues.condPassport ? 'Passport Deposit' : '',
+                    state.formValues.condWitness ? 'No Contact with Witnesses' : '',
+                    state.formValues.condGeo ? 'Geofencing Restrictions' : ''
                 ].filter(Boolean),
-                hearingDate: mount.querySelector('#form-hearing-time').value,
+                hearingDate: state.formValues.hearingTime,
                 currentStatus: "Checking",
                 orderStatus: "PENDING",
-                applicationStatus: mount.querySelector('#form-bail-status').value,
+                applicationStatus: state.formValues.bailStatus,
                 judgeRemarks: "",
                 digitalSignature: "",
                 accused: {
-                    fullName: mount.querySelector('#form-accused-name').value,
-                    dob: mount.querySelector('#form-accused-dob').value,
+                    fullName: state.formValues.accusedName,
+                    dob: state.formValues.accusedDob,
                     age: "40",
-                    fathersName: mount.querySelector('#form-accused-father').value,
-                    address: mount.querySelector('#form-accused-address').value,
-                    mobileNumber: mount.querySelector('#form-accused-mobile').value,
-                    aadhaarNumber: mount.querySelector('#form-accused-aadhaar').value,
-                    panNumber: mount.querySelector('#form-accused-pan').value,
-                    drivingLicense: mount.querySelector('#form-accused-dl').value || 'NIL',
-                    passportNumber: mount.querySelector('#form-accused-passport').value || 'NIL',
-                    employmentDetails: mount.querySelector('#form-accused-employment').value,
-                    monthlyIncome: parseInt(mount.querySelector('#form-accused-income').value) || 0,
-                    bankAccount: mount.querySelector('#form-accused-bank').value,
-                    cibilScore: parseInt(mount.querySelector('#form-accused-cibil').value) || 600,
-                    criminalHistory: mount.querySelector('#form-accused-ncrb').value || 'None',
+                    fathersName: state.formValues.accusedFather,
+                    address: state.formValues.accusedAddress,
+                    mobileNumber: state.formValues.accusedMobile,
+                    aadhaarNumber: state.formValues.accusedAadhaar,
+                    panNumber: state.formValues.accusedPan,
+                    drivingLicense: state.formValues.accusedDl || 'NIL',
+                    passportNumber: state.formValues.accusedPassport || 'NIL',
+                    employmentDetails: state.formValues.accusedEmployment,
+                    monthlyIncome: accusedIncome,
+                    bankAccount: state.formValues.accusedBank,
+                    cibilScore: accusedCibil,
+                    criminalHistory: state.formValues.accusedNcrb || 'None',
                     ncrbCount: ncrbCountVal,
                     prevBailsGranted: 0,
                     prevBailsHonored: 0,
@@ -907,35 +1082,72 @@ export const DashboardStaff = {
                 },
                 surety: {
                     suretyType: isProp ? "PROPERTY" : "INDIVIDUAL",
-                    fullName: isProp ? mount.querySelector('#form-accused-name').value : mount.querySelector('#form-surety-name').value, // default fallback
-                    relationToAccused: isProp ? "Self" : mount.querySelector('#form-surety-rel').value,
-                    mobileNumber: isProp ? mount.querySelector('#form-accused-mobile').value : mount.querySelector('#form-surety-mobile').value,
-                    aadhaarNumber: isProp ? mount.querySelector('#form-accused-aadhaar').value : mount.querySelector('#form-surety-aadhaar').value,
-                    panNumber: isProp ? mount.querySelector('#form-accused-pan').value : mount.querySelector('#form-surety-pan').value,
-                    employmentDetails: isProp ? mount.querySelector('#form-accused-employment').value : mount.querySelector('#form-surety-employment').value,
-                    monthlyIncome: isProp ? parseInt(mount.querySelector('#form-accused-income').value) || 0 : parseInt(mount.querySelector('#form-surety-income').value) || 0,
-                    avgAnnualItr: isProp ? (parseInt(mount.querySelector('#form-accused-income').value) || 0) * 12 : (parseInt(mount.querySelector('#form-surety-income').value) || 0) * 12,
+                    fullName: isProp ? state.formValues.accusedName : state.formValues.suretyName,
+                    relationToAccused: isProp ? "Self" : state.formValues.suretyRel,
+                    mobileNumber: isProp ? state.formValues.accusedMobile : state.formValues.suretyMobile,
+                    aadhaarNumber: isProp ? state.formValues.accusedAadhaar : state.formValues.suretyAadhaar,
+                    panNumber: isProp ? state.formValues.accusedPan : state.formValues.suretyPan,
+                    employmentDetails: isProp ? state.formValues.accusedEmployment : state.formValues.suretyEmployment,
+                    monthlyIncome: suretyIncome,
+                    avgAnnualItr: suretyIncome * 12,
                     activeBailCount: 0,
-                    propertyAddress: isProp ? mount.querySelector('#form-surety-prop-addr').value : "",
-                    surveyNumber: isProp ? mount.querySelector('#form-surety-survey').value : "",
-                    propertyValuation: isProp ? parseInt(mount.querySelector('#form-surety-value').value) || 0 : 0,
-                    propertyOwnershipDoc: isProp ? `Title Deed ID: ${mount.querySelector('#form-surety-deed').value}` : "N/A",
-                    propertyRevenueRecord: isProp ? `Patta No: ${mount.querySelector('#form-surety-patta').value}` : "N/A",
-                    encumbranceStatus: isProp ? mount.querySelector('#form-surety-encumbrance').value : "CLEAN",
+                    propertyAddress: isProp ? state.formValues.suretyPropAddr : "",
+                    surveyNumber: isProp ? state.formValues.suretySurvey : "",
+                    propertyValuation: propertyVal,
+                    propertyOwnershipDoc: isProp ? `Title Deed ID: ${state.formValues.suretyDeed}` : "N/A",
+                    propertyRevenueRecord: isProp ? `Patta No: ${state.formValues.suretyPatta}` : "N/A",
+                    encumbranceStatus: encumbrance,
                     mutationStatus: "PENDING"
                 },
                 checks: {
-                    identity: { status: 'GREEN', reasonEn: 'UIDAI biometric matching successful.', reasonHi: 'सफल बायोमेट्रिक मिलान।' },
-                    finance: { status: 'CAPABLE', reasonEn: 'Surety demonstrates capacity.', reasonHi: 'ज़मानतदार सक्षम है।' },
-                    risk: { score: ncrbCountVal * 25, status: ncrbCountVal > 0 ? 'HIGH' : 'LOW', reasonEn: 'Processed risk profile.', reasonHi: 'जोखिम प्रोफ़ाइल।' },
-                    suretyLoad: { status: 'GREEN', reasonEn: 'Surety holds no other active guarantees.', reasonHi: 'कोई अन्य सक्रिय ज़मानत नहीं है।' },
-                    property: { status: 'GREEN', reasonEn: 'Property unencumbered.', reasonHi: 'संपत्ति भारमुक्त है।' },
-                    recommendation: { status: ncrbCountVal > 0 ? 'REJECT' : 'ACCEPT', textEn: 'System Compiled Checks.', textHi: 'सिस्टम संकलित चेक।' }
+                    identity: {
+                        status: identityCheck.status,
+                        reasonEn: identityCheck.reasonEn,
+                        reasonHi: identityCheck.reasonHi
+                    },
+                    finance: {
+                        status: financeCheck.status,
+                        reasonEn: financeCheck.reasonEn,
+                        reasonHi: financeCheck.reasonHi
+                    },
+                    risk: {
+                        score: riskCheck.score,
+                        riskLevel: riskCheck.riskLevel,
+                        status: riskCheck.riskLevel,
+                        reasonEn: riskCheck.reasons.join('; '),
+                        reasonHi: riskCheck.reasonsHi.join('; ')
+                    },
+                    suretyLoad: {
+                        status: suretyLoadCheck.status,
+                        reasonEn: suretyLoadCheck.reasonEn,
+                        reasonHi: suretyLoadCheck.reasonHi
+                    },
+                    property: {
+                        status: propertyCheck.status,
+                        reasonEn: propertyCheck.reasonEn,
+                        reasonHi: propertyCheck.reasonHi
+                    },
+                    recommendation: {
+                        verdict: recommendationCheck.verdict,
+                        status: recommendationCheck.verdict === 'GRANT_BAIL' ? 'ACCEPT' : (recommendationCheck.verdict === 'GRANT_WITH_CONDITIONS' ? 'CONDITIONAL ACCEPT' : 'REJECT'),
+                        reasoningEn: recommendationCheck.reasoningEn,
+                        reasoningHi: recommendationCheck.reasoningHi,
+                        textEn: recommendationCheck.reasoningEn,
+                        textHi: recommendationCheck.reasoningHi
+                    }
                 }
             };
 
             state.cases.unshift(newCase);
             state.addAuditLog('CASE_REGISTER', `Registered new bail application ${cNo} for ${newCase.accused.fullName} under IPC ${newCase.ipcSections}.`);
+            
+            // Clear form state
+            state.formValues = {};
+            state.accusedFingerScanned = false;
+            state.accusedIrisScanned = false;
+            state.suretyFingerScanned = false;
+            state.formSectionIndex = 1;
+
             state.saveDatabase();
             
             alert(`Application for Case ${cNo} filed and compiled successfully!`);

@@ -526,18 +526,46 @@ function updateUI() {
     // Outer layout shell
     root.innerHTML = `
         <div class="app-wrapper" style="min-height: 100vh; background: var(--color-bg-dark); display: flex; flex-direction: column;">
+            <!-- India Govt Tricolor Accent Bar -->
+            <div class="tricolor-bar" style="height: 4px; display: flex; width: 100%;">
+                <div style="flex: 1; background: #FF9933;"></div>
+                <div style="flex: 1; background: #FFFFFF;"></div>
+                <div style="flex: 1; background: #128807;"></div>
+            </div>
             <!-- Top Navbar -->
-    <header class="top-navbar" style="background: var(--color-header-dark); border-bottom: 2px solid var(--color-border); padding: 12px 25px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.15);">
-                <div class="brand-section" style="display: flex; align-items: center; gap: 12px;">
-                    <div style="font-size: 26px; color: var(--color-gold);">⚖️</div>
+            <header class="top-navbar" style="background: var(--color-header-dark); border-bottom: 2px solid var(--color-border); padding: 12px 25px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 10px rgba(0,0,0,0.15);">
+                <div class="brand-section" style="display: flex; align-items: center; gap: 15px;">
+                    <div class="emblem-svg-container" style="display: flex; align-items: center; justify-content: center;">
+                        <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="var(--color-gold)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="filter: drop-shadow(0 0 3px rgba(212,175,55,0.4));">
+                            <!-- Base -->
+                            <path d="M8 21h8M12 17v4" />
+                            <!-- Pillar -->
+                            <path d="M12 5v12" />
+                            <circle cx="12" cy="4" r="1.5" fill="var(--color-gold)" />
+                            <!-- Main Beam -->
+                            <path d="M5 7h14" />
+                            <!-- Left Hanger & Pan -->
+                            <path d="M5 7l-2.5 7h5L5 7z" />
+                            <path d="M2.5 14c0 1.5 1.1 2 2.5 2s2.5-.5 2.5-2" />
+                            <!-- Right Hanger & Pan -->
+                            <path d="M19 7l-2.5 7h5L19 7z" />
+                            <path d="M16.5 14c0 1.5 1.1 2 2.5 2s2.5-.5 2.5-2" />
+                        </svg>
+                    </div>
                     <div>
-                        <h1 style="color: #FFFFFF; font-family: var(--font-brand); font-size: 18px; margin: 0; font-weight: 700; letter-spacing: 0.5px;">VERDIQO Bail Management System</h1>
-                        <p style="color: rgba(255,255,255,0.55); font-size: 10px; margin: 2px 0 0 0; font-family: var(--font-body); letter-spacing: 1.5px; text-transform: uppercase;">Quantex Adjudication Systems Portal</p>
+                        <h1 style="color: #FFFFFF; font-family: var(--font-brand); font-size: 18px; margin: 0; font-weight: 700; letter-spacing: 0.5px; display: flex; align-items: center; gap: 10px;">
+                            VERDIQO <span style="font-size: 12px; color: var(--color-gold); background: rgba(212,175,55,0.1); border: 1px solid rgba(212,175,55,0.3); padding: 2px 8px; border-radius: 4px; font-weight: 600; font-family: var(--font-body); letter-spacing: 0.5px; text-transform: uppercase;">e-Courts Portal</span>
+                        </h1>
+                        <p style="color: rgba(255,255,255,0.65); font-size: 10.5px; margin: 3px 0 0 0; font-family: var(--font-body); font-weight: 500; letter-spacing: 0.5px;">Integrated Bail Decision Support Desk • Government of India</p>
                     </div>
                 </div>
 
-                <div class="nav-actions" style="display: flex; align-items: center; gap: 12px;">
-                    <button class="theme-toggle-btn-mock" id="global-theme-toggle-btn" title="Toggle Theme" style="display: flex; align-items: center; justify-content: center; width: 34px; height: 34px; background: #ffffff; border: 1px solid rgba(0,0,0,0.15); border-radius: 6px; cursor: pointer; font-size: 16px;">
+                <div class="nav-actions" style="display: flex; align-items: center; gap: 15px;">
+                    <div class="secure-badge" style="display: flex; align-items: center; gap: 6px; background: rgba(18, 136, 7, 0.12); border: 1px solid rgba(18, 136, 7, 0.3); padding: 4px 10px; border-radius: 20px; font-size: 10px; color: #5cdb5c; font-weight: 700; letter-spacing: 0.5px; font-family: var(--font-mono);">
+                        <span style="display: inline-block; width: 6px; height: 6px; background: #5cdb5c; border-radius: 50%; box-shadow: 0 0 8px #5cdb5c; animation: pulseGreen 2s infinite;"></span>
+                        NIC-NET SECURE
+                    </div>
+                    <button class="theme-toggle-btn-mock" id="global-theme-toggle-btn" title="Toggle Theme" style="display: flex; align-items: center; justify-content: center; width: 34px; height: 34px; background: rgba(255,255,255,0.06); border: 1px solid var(--color-border); border-radius: 6px; cursor: pointer; font-size: 14px; color: #FFFFFF; transition: background 0.2s;">
                         ${document.body.classList.contains('light-theme') ? '🌙' : '☀️'}
                     </button>
                     <div class="user-info-display" style="text-align: right; line-height: 1.3;">
@@ -547,7 +575,16 @@ function updateUI() {
                     <button class="btn btn-secondary" id="global-logout-btn" style="font-size: 12px; font-weight: 700; border-color: var(--color-border); color: #FFFFFF; background: rgba(255,255,255,0.05); padding: 6px 14px; white-space: nowrap;">Logout</button>
                 </div>
             </header>
-
+            <style>
+                @keyframes pulseGreen {
+                    0% { opacity: 0.5; }
+                    50% { opacity: 1; }
+                    100% { opacity: 0.5; }
+                }
+                .theme-toggle-btn-mock:hover {
+                    background: rgba(255,255,255,0.12) !important;
+                }
+            </style>
             <!-- Main Workspace content -->
             <main class="main-content" id="dashboard-mount-point" style="flex: 1; padding: 25px; max-width: 1200px; width: 100%; margin: 0 auto; box-sizing: border-box;"></main>
         </div>

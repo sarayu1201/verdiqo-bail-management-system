@@ -444,18 +444,18 @@ class ApplicationState {
         modalOverlay.style = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(5,12,22,0.85); display: flex; justify-content: center; align-items: center; z-index: 1000; padding: 16px; box-sizing: border-box;';
         
         modalOverlay.innerHTML = `
-            <div class="modal-content" style="background: var(--color-card-dark); border: 2px solid var(--color-border); border-radius: 12px; width: 100%; max-width: 520px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.6);">
+            <div class="modal-content" style="font-family: 'Inter', sans-serif; background: var(--color-card-dark); border: 2px solid var(--color-border); border-radius: 12px; width: 100%; max-width: 520px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.6);">
                 
                 <!-- Modal Header -->
-                <div style="background: var(--color-header-dark); border-bottom: 2px solid var(--color-gold); padding: 16px 20px; display: flex; align-items: center; gap: 12px;">
+                <div style="background: var(--color-header-dark); border-bottom: 2px solid #FFD700; padding: 16px 20px; display: flex; align-items: center; gap: 12px;">
                     <button id="back-selector-btn" style="display: flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); color: #FFFFFF; font-size: 13px; font-weight: 700; padding: 7px 14px; border-radius: 6px; cursor: pointer; transition: background 0.2s; white-space: nowrap;">
                         ← Back
                     </button>
                     <div style="flex: 1; min-width: 0;">
-                        <div style="color: var(--color-gold); font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">Legal Document Selector</div>
+                        <div style="color: #FFD700; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">Legal Document Selector</div>
                         <div style="color: #FFFFFF; font-size: 14px; font-weight: 700; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                             ${caseRecord.accused.fullName}
-                            <span style="color: rgba(255,255,255,0.5); font-size: 12px; font-weight: 400; font-family: var(--font-mono); margin-left: 6px;">${caseRecord.caseNumber}</span>
+                            <span style="color: rgba(255,255,255,0.85); font-size: 12px; font-weight: 700; font-family: var(--font-mono); margin-left: 6px;">${caseRecord.caseNumber}</span>
                         </div>
                     </div>
                     <button id="close-selector-btn" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); color: rgba(255,255,255,0.7); font-size: 20px; line-height: 1; width: 32px; height: 32px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
@@ -465,7 +465,7 @@ class ApplicationState {
 
                 <!-- Report List -->
                 <div style="padding: 16px 20px 20px 20px; display: flex; flex-direction: column; gap: 8px;">
-                    <p style="color: var(--color-text-muted); font-size: 12px; margin: 0 0 8px 0;">Select a report to generate and preview:</p>
+                    <p style="color: var(--color-text-muted); font-size: 12px; margin: 0 0 8px 0; font-weight: bold;">Select a report to generate and preview:</p>
                     ${reports.map((r, i) => `
                         <button class="btn-select-report" data-id="${r.id}">
                             <span style="display: flex; align-items: center; gap: 10px;">

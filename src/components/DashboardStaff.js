@@ -51,10 +51,10 @@ export const DashboardStaff = {
             const status = c.applicationStatus || 'CHECKING';
             if (status === 'ALERT' || status === 'DENIED' || risk >= 80) {
                 return 'alert';
-            } else if (status === 'GRANTED' || risk < 40) {
-                return 'verified';
-            } else {
+            } else if (status === 'CHECKING') {
                 return 'checking';
+            } else {
+                return 'verified';
             }
         };
 
@@ -82,7 +82,7 @@ export const DashboardStaff = {
 
         const buildRows = (cases) => {
             if (cases.length === 0) return `
-                <tr><td colspan="6" style="padding: 30px; text-align: center; color: var(--color-text-muted); font-size: 14px;">
+                <tr><td colspan="6" style="padding: 30px; text-align: center; color: var(--color-text-muted); font-size: 15px;">
                     No cases match this filter.
                 </td></tr>`;
             return cases.map(c => {
@@ -97,13 +97,13 @@ export const DashboardStaff = {
 
                 return `
                     <tr class="clickable-row" data-caseno="${c.caseNumber}" style="border-bottom: 1px solid var(--color-border); cursor: pointer; transition: background 0.2s;">
-                        <td style="padding: 12px; font-weight: 600; color: var(--color-text-main);">${c.accused.fullName}</td>
-                        <td style="padding: 12px; font-family: var(--font-mono); color: var(--color-text-muted);">${c.caseNumber}</td>
-                        <td style="padding: 12px; color: var(--color-text-muted);">${c.ipcSections}</td>
-                        <td style="padding: 12px; color: var(--color-text-muted);">${c.bailType}</td>
-                        <td style="padding: 12px; font-family: var(--font-mono); color: var(--color-text-muted);">${c.hearingDate ? c.hearingDate.split('T')[1] || '10:30' : '10:30'}</td>
-                        <td style="padding: 12px;">
-                            <span class="badge" style="background: ${badgeBg}; color: ${badgeColor}; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 700;">${status}</span>
+                        <td style="padding: 14px 12px; font-weight: 600; color: var(--color-text-main); font-size: 15px;">${c.accused.fullName}</td>
+                        <td style="padding: 14px 12px; font-family: var(--font-mono); color: var(--color-text-muted); font-size: 14px;">${c.caseNumber}</td>
+                        <td style="padding: 14px 12px; color: var(--color-text-muted); font-size: 14px;">${c.ipcSections}</td>
+                        <td style="padding: 14px 12px; color: var(--color-text-muted); font-size: 14px;">${c.bailType}</td>
+                        <td style="padding: 14px 12px; font-family: var(--font-mono); color: var(--color-text-muted); font-size: 14px;">${c.hearingDate ? c.hearingDate.split('T')[1] || '10:30' : '10:30'}</td>
+                        <td style="padding: 14px 12px;">
+                            <span class="badge" style="background: ${badgeBg}; color: ${badgeColor}; padding: 5px 10px; border-radius: 4px; font-size: 12.5px; font-weight: 700;">${status}</span>
                         </td>
                     </tr>`;
             }).join('');
@@ -118,24 +118,24 @@ export const DashboardStaff = {
             <!-- Counters Grid -->
             <div class="counters-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px;">
                 <div class="kpi-filter-card" data-filter="all" style="${cardStyle('all', 'var(--color-navy-sec)')}">
-                    <div style="font-size: 13px; color: var(--color-text-muted); text-transform: uppercase;">Total Applications Today</div>
-                    <div style="font-size: 32px; font-weight: 800; color: var(--color-blue-num); font-family: var(--font-mono);">${totalToday}</div>
-                    <div style="font-size: 11px; color: var(--color-text-muted); margin-top: 4px;">Click to show all ↗</div>
+                    <div style="font-size: 14px; color: var(--color-text-muted); text-transform: uppercase; font-weight: 600;">Total Applications Today</div>
+                    <div style="font-size: 36px; font-weight: 800; color: var(--color-blue-num); font-family: var(--font-mono);">${totalToday}</div>
+                    <div style="font-size: 12px; color: var(--color-text-muted); margin-top: 4px;">Click to show all ↗</div>
                 </div>
                 <div class="kpi-filter-card" data-filter="verified" style="${cardStyle('verified', 'var(--color-success)')}">
-                    <div style="font-size: 13px; color: var(--color-text-muted); text-transform: uppercase;">Verified &amp; Ready</div>
-                    <div style="font-size: 32px; font-weight: 800; color: var(--color-success); font-family: var(--font-mono);">${verifiedReady}</div>
-                    <div style="font-size: 11px; color: var(--color-text-muted); margin-top: 4px;">Click to filter ↗</div>
+                    <div style="font-size: 14px; color: var(--color-text-muted); text-transform: uppercase; font-weight: 600;">Verified &amp; Ready</div>
+                    <div style="font-size: 36px; font-weight: 800; color: var(--color-success); font-family: var(--font-mono);">${verifiedReady}</div>
+                    <div style="font-size: 12px; color: var(--color-text-muted); margin-top: 4px;">Click to filter ↗</div>
                 </div>
                 <div class="kpi-filter-card" data-filter="checking" style="${cardStyle('checking', 'var(--color-warning)')}">
-                    <div style="font-size: 13px; color: var(--color-text-muted); text-transform: uppercase;">Still Checking</div>
-                    <div style="font-size: 32px; font-weight: 800; color: var(--color-warning); font-family: var(--font-mono);">${stillChecking}</div>
-                    <div style="font-size: 11px; color: var(--color-text-muted); margin-top: 4px;">Click to filter ↗</div>
+                    <div style="font-size: 14px; color: var(--color-text-muted); text-transform: uppercase; font-weight: 600;">Still Checking</div>
+                    <div style="font-size: 36px; font-weight: 800; color: var(--color-warning); font-family: var(--font-mono);">${stillChecking}</div>
+                    <div style="font-size: 12px; color: var(--color-text-muted); margin-top: 4px;">Click to filter ↗</div>
                 </div>
                 <div class="kpi-filter-card" data-filter="alert" style="${cardStyle('alert', 'var(--color-danger)')}">
-                    <div style="font-size: 13px; color: var(--color-text-muted); text-transform: uppercase;">Alerts Raised</div>
-                    <div style="font-size: 32px; font-weight: 800; color: var(--color-danger); font-family: var(--font-mono);">${alertsRaised}</div>
-                    <div style="font-size: 11px; color: var(--color-text-muted); margin-top: 4px;">Click to filter ↗</div>
+                    <div style="font-size: 14px; color: var(--color-text-muted); text-transform: uppercase; font-weight: 600;">Alerts Raised</div>
+                    <div style="font-size: 36px; font-weight: 800; color: var(--color-danger); font-family: var(--font-mono);">${alertsRaised}</div>
+                    <div style="font-size: 12px; color: var(--color-text-muted); margin-top: 4px;">Click to filter ↗</div>
                 </div>
             </div>
 
@@ -143,27 +143,27 @@ export const DashboardStaff = {
             <div class="card" style="background: var(--color-card-dark); border: 1px solid var(--color-border); border-radius: 8px; padding: 20px; margin-top: 15px;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                     <div>
-                        <h3 style="color: var(--color-text-main); font-family: var(--font-brand); margin: 0 0 4px 0;">Applications Ledger</h3>
-                        <div id="ledger-filter-label" style="font-size: 12px; color: var(--color-gold); font-weight: 600;">
+                        <h3 style="color: var(--color-text-main); font-family: var(--font-brand); margin: 0 0 4px 0; font-size: 22px;">Applications Ledger</h3>
+                        <div id="ledger-filter-label" style="font-size: 14px; color: var(--color-gold); font-weight: 600;">
                             Showing: ${filterLabels[state.ledgerFilter]}
                             ${state.ledgerFilter !== 'all' ? `<span id="clear-filter-btn" style="margin-left: 10px; color: var(--color-text-muted); cursor: pointer; text-decoration: underline; font-weight: 400;">✕ Clear filter</span>` : ''}
                         </div>
                     </div>
-                    <span style="font-size: 13px; color: var(--color-text-muted);">${getFiltered(state.ledgerFilter).length} record(s)</span>
+                    <span id="ledger-record-count" style="font-size: 14px; color: var(--color-text-muted); font-weight: 600;">${getFiltered(state.ledgerFilter).length} record(s)</span>
                 </div>
                 <div class="table-container" style="overflow-x: auto;">
                     <table class="data-table" style="width: 100%; border-collapse: collapse; text-align: left;">
                         <thead>
-                            <tr style="background: var(--color-table-header); color: var(--color-text-main); border-bottom: 2px solid var(--color-border);">
-                                <th style="padding: 12px;">Accused Name</th>
-                                <th style="padding: 12px;">Case Number</th>
-                                <th style="padding: 12px;">IPC Sections</th>
-                                <th style="padding: 12px;">Bail Type</th>
-                                <th style="padding: 12px;">Hearing Time</th>
-                                <th style="padding: 12px;">Status</th>
+                            <tr style="background: var(--color-table-header); color: var(--color-text-main); border-bottom: 2px solid var(--color-border); font-size: 14px; font-weight: 700;">
+                                <th style="padding: 14px 12px;">Accused Name</th>
+                                <th style="padding: 14px 12px;">Case Number</th>
+                                <th style="padding: 14px 12px;">IPC Sections</th>
+                                <th style="padding: 14px 12px;">Bail Type</th>
+                                <th style="padding: 14px 12px;">Hearing Time</th>
+                                <th style="padding: 14px 12px;">Status</th>
                             </tr>
                         </thead>
-                        <tbody id="case-table-body">
+                        <tbody id="case-table-body" style="font-size: 14.5px;">
                             ${buildRows(getFiltered(state.ledgerFilter))}
                         </tbody>
                     </table>
@@ -193,7 +193,11 @@ export const DashboardStaff = {
                 // Update label
                 const label = mount.querySelector('#ledger-filter-label');
                 label.innerHTML = `Showing: ${filterLabels[filter]} ${filter !== 'all' ? `<span id="clear-filter-btn" style="margin-left:10px;color:var(--color-text-muted);cursor:pointer;text-decoration:underline;font-weight:400;">✕ Clear filter</span>` : ''}`;
-                mount.querySelector('span[style*="record"]').textContent = getFiltered(filter).length + ' record(s)';
+                
+                const recordCountSpan = mount.querySelector('#ledger-record-count');
+                if (recordCountSpan) {
+                    recordCountSpan.textContent = getFiltered(filter).length + ' record(s)';
+                }
 
                 // Clear filter click (re-bind since inner HTML replaced)
                 const clearBtn = mount.querySelector('#clear-filter-btn');

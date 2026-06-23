@@ -97,7 +97,7 @@ export const DashboardStaff = {
 
                 return `
                     <tr class="clickable-row" data-caseno="${c.caseNumber}" style="border-bottom: 1px solid var(--color-border); cursor: pointer; transition: background 0.2s;">
-                        <td style="padding: 14px 12px; font-weight: 600; color: var(--color-text-main); font-size: 15px;">${c.accused.fullName}</td>
+                        <td style="padding: 14px 12px; color: var(--color-text-main); font-size: 15px;">${c.accused.fullName}</td>
                         <td style="padding: 14px 12px; font-family: var(--font-mono); color: var(--color-text-muted); font-size: 14px;">${c.caseNumber}</td>
                         <td style="padding: 14px 12px; color: var(--color-text-muted); font-size: 14px;">${c.ipcSections}</td>
                         <td style="padding: 14px 12px; color: var(--color-text-muted); font-size: 14px;">${c.bailType}</td>

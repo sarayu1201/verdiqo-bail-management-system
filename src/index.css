@@ -32,11 +32,11 @@
   --color-danger: #f87171;
   --color-danger-bg: rgba(248, 113, 113, 0.12);
   
-  --font-brand: 'Lora', Georgia, serif;
-  --font-headings: 'Lora', Georgia, serif;
+  --font-brand: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-headings: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --font-body: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --font-mono: 'JetBrains Mono', monospace;
-  --font-legal: 'Lora', Georgia, serif;
+  --font-legal: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   
   --border-radius-sm: 4px;
   --border-radius-md: 8px;
